@@ -1,0 +1,25 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Run chart-releaser
+        uses: redhat-consulting-services/helm-oci-releaser-action@v1.1.0
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          chart_repository_url: oci://ghcr.io/redhat-consulting-services/helm-charts
+          chart_repository_username: ${{ github.actor }}
+          chart_repository_password: ${{ secrets.GITHUB_TOKEN }}
