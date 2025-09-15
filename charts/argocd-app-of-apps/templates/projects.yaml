@@ -1,0 +1,48 @@
+{{- range $key,$val := .Values.projects }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ $key }}
+  namespace: {{ $val.namespace | quote }}
+  {{- with $val.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.labels }}
+  labels:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.finalizers }}
+  finalizers:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $val.description }}
+  description: {{ . | quote }}
+  {{- end }}
+  {{- with $val.sourceRepos }}
+  sourceRepos:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.destinations }}
+  destinations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.clusterResourceWhitelist }}
+  clusterResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.namespaceResourceBlacklist }}
+  roles:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.namespaceResourceWhitelist }}
+  namespaceResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.roles }}
+  roles:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

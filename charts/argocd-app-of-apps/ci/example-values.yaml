@@ -1,0 +1,37 @@
+appSuffix: abc
+appSourceBasePath: overlays/dev/dev01/cluster-config
+
+default:
+  application:
+    enabled: false
+    namespace: "openshift-gitops"
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: "openshift-gitops"
+    project: "default"
+    source:
+      repoURL: https://github.com/my-org/my-repo
+      targetRevision: main
+
+projects:
+  example:
+    annotations:
+      argocd.argoproj.io/sync-wave: "-2"
+    description: Project for cluster cp1-hub
+    namespace: openshift-gitops
+    sourceRepos:
+      - https://gitlab.example.com/infra/cluster-config.git
+    destinations:
+      - namespace: '*'
+        server: https://kubernetes.default.svc
+    extraFields: |
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+
+applications:
+  disco-operators:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    source:
+      path: disco-operators

@@ -1,0 +1,193 @@
+# Default values for argocd-app-of-apps.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# appSuffix is the suffix to append to the app name
+# This will be applied to all applications in the app-of-apps, unless the application has skipGlobalSuffix set to true
+appSuffix: null
+
+# appSourceBasePath is the base path for the application source
+# This will be applied to all applications in the app-of-apps, unless the application has source.ignoreBasePath set to true
+# If source.ignoreBasePath is set to false (default), the source.path will be appended to the appSourceBasePath
+appSourceBasePath: null
+
+# -- Default values for all applications
+default:
+  # -- Define default configurations for all applications
+  # -- We expect the same structure as for the applications below
+  application:
+    enabled: false
+    namespace: "openshift-gitops"
+    labels: {}
+    annotations: {}
+    finalizers: []
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: "openshift-gitops"
+    project: "default"
+    # applications.example.syncPolicy -- syncPolicy is the sync policy for the application
+    syncPolicy:
+      # applications.example.syncPolicy.automated -- automated is the automated sync policy for the application
+      automated:
+        # applications.example.syncPolicy.automated.selfHeal -- selfHeal is a flag to enable or disable self-healing
+        selfHeal: true
+        # applications.example.syncPolicy.automated.prune -- prune is a flag to enable or disable pruning
+        prune: true
+      # applications.example.syncPolicy.retry -- retry is the retry strategy for the application
+      retry: {}
+      # applications.example.syncPolicy.syncOptions -- syncOptions is a list of sync options
+      syncOptions: []
+    # applications.example.source -- source is the source of the application
+    # only one of application.example.source or application.example.sources can be set
+    source:
+      # applications.example.source.repoURL -- repoURL is the URL to the application source repository
+      repoURL: https://github.com/my-org/my-repo  # path is missing so no manifests are generated
+      # applications.example.source.targetRevision -- targetRevision is the revision of the application source repository
+      targetRevision: master
+      # applications.example.source.ignoreBasePath -- ignoreBasePath is a flag to ignore the base path set in appSourceBasePath
+      ignoreBasePath: false
+      # applications.example.source.path -- path is the path to the application source
+      path: ""
+      # applications.example.source.helm -- helm is the Helm specific configuration
+      # For more information about the Helm configuration, see https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm
+      helm: {}
+      #   # applications.example.source.helm.releaseName -- releaseName is the name of the Helm release
+      #   releaseName: ""
+      #   # applications.example.source.helm.ignoreMissingValueFiles -- ignoreMissingValueFiles is a flag to ignore missing value files
+      #   ignoreMissingValueFiles: false
+      #   # applications.example.source.helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
+      #   valueFiles:
+      #     - $myRepo/values.yaml
+
+# -- Define a map of projects and their configurations
+projects: {}
+  # project1:
+  #   # projects.<project-name>.namespace -- namespace is the namespace for the project
+  #   namespace: "openshift-gitops"
+  #   # projects.<project-name>.annotations -- annotations is a map of annotations for the project
+  #   annotations: {}
+  #   # projects.<project-name>.labels -- labels is a map of labels for the project
+  #   labels: {}
+  #   # projects.<project-name>.finalizers -- finalizers is a list of finalizers for the project
+  #   finalizers: []
+  #   # projects.<project-name>.description -- description is the description of the project
+  #   description: ""
+  #   # projects.<project-name>.sourceRepos -- sourceRepos is a list of source repositories for the project
+  #   sourceRepos:
+  #     - '*'
+  #   # projects.<project-name>.destinations -- destinations is a list of destinations for the project
+  #   destinations:
+  #     - namespace: '*'
+  #       server: https://kubernetes.default.svc
+  #
+  #   # projects.<project-name>.clusterResourceWhitelist -- clusterResourceWhitelist is a list of cluster resources to whitelist
+  #   clusterResourceWhitelist: []
+  #   # - group: ''
+  #   #   kind: Namespace
+  #
+  #   # projects.<project-name>.namespaceResourceBlacklist -- namespaceResourceBlacklist is a list of namespace resources to blacklist
+  #   namespaceResourceBlacklist: []
+  #   # - group: ''
+  #   #   kind: ResourceQuota
+  #
+  #   # projects.<project-name>.namespaceResourceWhitelist -- namespaceResourceWhitelist is a list of namespace resources to whitelist
+  #   namespaceResourceWhitelist: []
+  #   # - group: 'apps'
+  #   #   kind: Deployment
+  #
+  #   # projects.<project-name>.extraFields -- roles is a list of roles for the project
+  #   roles: []
+  #   # - name: read-only
+  #   #   description: Read-only privileges to my-project
+  #   #   policies:
+  #   #   - p, proj:my-project:read-only, applications, get, my-project/*, allow
+  #   #   groups:
+  #   #   - my-oidc-group
+  #
+  #   # projects.<project-name>.extraFields -- extraFields allows for adding additional fields to the project, that are not mapped
+  #   extraFields: {}
+
+# -- Define a map of applications and their configurations
+applications: {}
+  # example:
+  #   # applications.example.enabled -- enabled is a flag to enable or disable the application
+  #   enabled: true
+  #   namespace: "openshift-gitops"
+  #   labels: {}
+  #   annotations: {}
+  #     # argocd.argoproj.io/sync-wave: "14"
+  #   finalizers: []
+  #   destination:
+  #     server: https://kubernetes.default.svc
+  #     namespace: "openshift-gitops"
+  #   project: "default"
+  #   # applications.example.syncPolicy -- syncPolicy is the sync policy for the application
+  #   syncPolicy:
+  #     # applications.example.syncPolicy.automated -- automated is the automated sync policy for the application
+  #     automated:
+  #       # applications.example.syncPolicy.automated.selfHeal -- selfHeal is a flag to enable or disable self-healing
+  #       selfHeal: true
+  #       # applications.example.syncPolicy.automated.prune -- prune is a flag to enable or disable pruning
+  #       prune: true
+  #     # applications.example.syncPolicy.retry -- retry is the retry strategy for the application
+  #     retry: {}
+  #     # applications.example.syncPolicy.syncOptions -- syncOptions is a list of sync options
+  #     syncOptions: []
+  #   # applications.example.source -- source is the source of the application
+  #   # only one of application.example.source or application.example.sources can be set
+  #   source:
+  #     # applications.example.source.repoURL -- repoURL is the URL to the application source repository
+  #     repoURL: https://github.com/my-org/my-repo  # path is missing so no manifests are generated
+  #     # applications.example.source.targetRevision -- targetRevision is the revision of the application source repository
+  #     targetRevision: master
+  #     # applications.example.source.ignoreBasePath -- ignoreBasePath is a flag to ignore the base path set in appSourceBasePath
+  #     ignoreBasePath: false
+  #     # applications.example.source.path -- path is the path to the application source
+  #     path: ""
+  #     # applications.example.source.chart -- chart is the name of the chart to be used
+  #     chart: null
+  #     # applications.example.source.helm -- helm is the Helm specific configuration
+  #     # For more information about the Helm configuration, see https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm
+  #     helm:
+  #       # applications.example.source.helm.releaseName -- releaseName is the name of the Helm release
+  #       releaseName: ""
+  #       # applications.example.source.helm.ignoreMissingValueFiles -- ignoreMissingValueFiles is a flag to ignore missing value files
+  #       ignoreMissingValueFiles: false
+  #       # applications.example.source.helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
+  #       valueFiles:
+  #         - $myRepo/values.yaml
+  #   # applications.example.sources -- sources is a list of sources for the application
+  #   # only one of application.example.source or application.example.sources can be set
+  #   sources:
+  #     -
+  #       # applications.example.sources[0].repoURL -- repoURL is the URL to the application source repository
+  #       repoURL: https://ghcr.io/redhat-consulting-services/helm-charts/argocd-app-of-apps
+  #       # applications.example.sources[0].targetRevision -- targetRevision is the revision of the application source repository
+  #       targetRevision: "0.1.0"
+  #       # applications.example.sources[0].helm -- helm is the Helm specific configuration
+  #       # For more information about the Helm configuration, see https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm
+  #       helm:
+  #         # applications.example.sources[0].helm.releaseName -- releaseName is the name of the Helm release
+  #         releaseName: "app-of-apps"
+  #         # applications.example.sources[0].helm.ignoreMissingValueFiles -- ignoreMissingValueFiles is a flag to ignore missing value files
+  #         ignoreMissingValueFiles: false
+  #         # applications.example.sources[0].helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
+  #         valueFiles:
+  #           - $myRepo/values.yaml
+  #     -
+  #       # applications.example.sources[1].repoURL -- repoURL is the URL to the application source repository
+  #       repoURL: https://github.com/redhat-consulting-services/helm-charts
+  #       # applications.example.sources[1].targetRevision -- targetRevision is the revision of the application source repository
+  #       targetRevision: HEAD
+  #       # applications.example.sources[1].ignoreBasePath -- ignoreBasePath is a flag to ignore the base path set in appSourceBasePath
+  #       ignoreBasePath: false
+  #       # applications.example.sources[1].path -- path is the path to the application source
+  #       path: "app-of-apps"
+  #       # applications.example.sources[1].ref -- ref is the reference name to be used in the application (only used when Helm is used with different repositories for chart and values)
+  #       ref: myRepo
+  #   # applications.example.extraFields -- extraFields allows for adding additional fields to the application, that are not mapped
+  #   extraFields: {}

@@ -1,0 +1,40 @@
+appSuffix: hello-world
+
+default:
+  app:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: true
+    project: cp1-hub
+    destination:
+      namespace: openshift-gitops
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://gitlab.example.com/infra/cluster-config.git
+      targetRevision: dev09-develop
+
+projects:
+  cp1-hub:
+    annotations:
+      argocd.argoproj.io/sync-wave: "-2"
+    description: Project for cluster cp1-hub
+    namespace: openshift-gitops
+    sourceRepos:
+      - https://gitlab.example.com/infra/cluster-config.git
+    destinations: |
+      - namespace: '*'
+        server: https://kubernetes.default.svc
+    extraFields: |
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+
+applications:
+  disco-operators-cp1:
+    skipGlobalSuffix: true
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    source:
+      path: overlays/dev/dev09/cp1/hub/cluster-config/disco-operators
