@@ -33,12 +33,16 @@ spec:
   clusterResourceWhitelist:
     {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.namespaceResourceBlacklist }}
-  roles:
+  {{- with $val.clusterResourceBlacklist }}
+  clusterResourceBlacklist:
     {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- with $val.namespaceResourceWhitelist }}
   namespaceResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $val.namespaceResourceBlacklist }}
+  namespaceResourceBlacklist:
     {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- with $val.roles }}

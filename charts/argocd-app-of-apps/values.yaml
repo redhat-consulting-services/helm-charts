@@ -64,21 +64,27 @@ default:
       #     - $myRepo/values.yaml
 
 # -- Define a map of projects and their configurations
-projects: {}
+projects:
   # project1:
   #   # projects.<project-name>.namespace -- namespace is the namespace for the project
   #   namespace: "openshift-gitops"
+  #
   #   # projects.<project-name>.annotations -- annotations is a map of annotations for the project
   #   annotations: {}
+  #
   #   # projects.<project-name>.labels -- labels is a map of labels for the project
   #   labels: {}
+  #
   #   # projects.<project-name>.finalizers -- finalizers is a list of finalizers for the project
   #   finalizers: []
+  #
   #   # projects.<project-name>.description -- description is the description of the project
   #   description: ""
+  #
   #   # projects.<project-name>.sourceRepos -- sourceRepos is a list of source repositories for the project
   #   sourceRepos:
   #     - '*'
+  #
   #   # projects.<project-name>.destinations -- destinations is a list of destinations for the project
   #   destinations:
   #     - namespace: '*'
@@ -89,15 +95,20 @@ projects: {}
   #   # - group: ''
   #   #   kind: Namespace
   #
-  #   # projects.<project-name>.namespaceResourceBlacklist -- namespaceResourceBlacklist is a list of namespace resources to blacklist
-  #   namespaceResourceBlacklist: []
+  #   # projects.<project-name>.clusterResourceWhitelist -- clusterResourceWhitelist is a list of cluster resources to whitelist
+  #   clusterResourceBlacklist: []
   #   # - group: ''
-  #   #   kind: ResourceQuota
+  #   #   kind: Namespace
   #
   #   # projects.<project-name>.namespaceResourceWhitelist -- namespaceResourceWhitelist is a list of namespace resources to whitelist
   #   namespaceResourceWhitelist: []
   #   # - group: 'apps'
   #   #   kind: Deployment
+  #
+  #   # projects.<project-name>.namespaceResourceBlacklist -- namespaceResourceBlacklist is a list of namespace resources to blacklist
+  #   namespaceResourceBlacklist: []
+  #   # - group: ''
+  #   #   kind: ResourceQuota
   #
   #   # projects.<project-name>.extraFields -- roles is a list of roles for the project
   #   roles: []
