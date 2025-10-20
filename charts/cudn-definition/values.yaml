@@ -1,0 +1,23 @@
+# -- name for the CUDN resource
+name:
+
+labels:
+  vm.openshift.com/stage: prod
+
+# -- type defines the type of CUDN to create. Valid values are "Localnet", "Layer2", and "Layer3"
+type: Localnet
+
+localnet: {}
+  # role: Secondary
+  # physicalNetworkName: localnet-bridge-vm-traffic
+  # vlan:
+  #   mode: Access
+  #   access:
+  #     id: 1
+  # subnets: []
+  # excludeSubnets: []
+  # ipam: {}
+
+layer2: {}
+
+layer3: {}
