@@ -1,0 +1,36 @@
+# labels is a map of labels to add to the CUDN and to the namespaceSelector. Only the keys stageLabel and vlanLabel are allowed.
+labels:
+  # -- The stage label is used to indicate the stage of the environment
+  stageLabel: ns.openshift.io/stage
+  # -- The vlan label is used to indicate the VLAN ID of the network
+  # -- The label will be suffixed with the VLAN ID number, e.g. networking.openshift.io/vlan-100
+  vlanLabel: networking.openshift.io/vlan
+
+# -- globals contains global settings for the chart
+globals:
+  # -- Default settings for localnet networks
+  localnet:
+    # -- Default physical network name for localnet networks
+    physicalNetworkName: ""
+
+# -- List of ClusterUserDefinedNetworks to create with Localnet topology
+localnet: []
+  # - name: network-prefix
+  #   stage: prod
+  #   primary: true
+  #   physicalNetworkName: custom-physical-network
+  #   id: 10
+  #   subnets:
+  #     - cidr: 10.0.0.0/24
+  #   excludeSubnets:
+  #     - 10.0.0.0/23
+  #     - 10.0.0.255/32
+  #   ipam:
+  #     enabled: true
+
+  # - name: network-prefix
+  #   stage: prod
+  #   idStart: 35
+  #   idEnd: 36
+  #   ipam:
+  #     enabled: false

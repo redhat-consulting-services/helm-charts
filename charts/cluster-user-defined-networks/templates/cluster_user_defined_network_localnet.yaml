@@ -1,0 +1,99 @@
+{{- $stageLabel := $.Values.labels.stageLabel }}
+{{- range $key, $value := .Values.localnet }}
+{{- if not $value.id }}
+
+{{- if or (not $value.idStart) (not $value.idEnd) }}
+{{- fail "Either id or both idStart and idEnd must be defined for each network in networks." }}
+{{- end }}
+
+{{- $start := $value.idStart | int }}
+{{- $end := $value.idEnd | int }}
+{{- range $i := untilStep $start (add $end 1 | int) 1 }}
+{{- $vlanLabel := printf "%s-%v" $.Values.labels.vlanLabel $i }}
+---
+apiVersion: k8s.ovn.org/v1
+kind: ClusterUserDefinedNetwork
+metadata:
+  name: vlan-{{ $i }}-{{ $value.stage }}-{{ $value.name }}
+  labels:
+    {{ $stageLabel }}: {{ $value.stage }}
+    {{ $vlanLabel }}: "true"
+spec:
+  namespaceSelector:
+    matchLabels:
+      {{ $stageLabel }}: {{ $value.stage }}
+      {{ $vlanLabel }}: "true"
+  network:
+    topology: Localnet
+    localnet:
+      role: Secondary
+      {{- if $value.physicalNetworkName }}
+      physicalNetworkName: {{ $value.physicalNetworkName }}
+      {{- else }}
+      physicalNetworkName: {{ $.Values.globals.localnet.physicalNetworkName }}
+      {{- end }}
+      vlan:
+        mode: Access
+        access:
+          id: {{ $i }}
+      {{- with $value.subnets }}
+      subnets:
+        {{- . | default list | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $value.excludeSubnets }}
+      excludeSubnets:
+        {{- . | default list | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $value.ipam }}
+      ipam:
+        {{- . | default dict | toYaml | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{- else }}
+---
+# id is defined
+{{- $vlanLabel := printf "%s-%v" $.Values.labels.vlanLabel $value.id }}
+apiVersion: k8s.ovn.org/v1
+kind: ClusterUserDefinedNetwork
+metadata:
+  name: vlan-{{ $value.id }}-{{ $value.stage }}-{{ $value.name }}
+  labels:
+    {{ $stageLabel }}: {{ $value.stage }}
+    {{ $vlanLabel }}: "true"
+spec:
+  namespaceSelector:
+    matchLabels:
+      {{ $stageLabel }}: {{ $value.stage }}
+      {{ $vlanLabel }}: "true"
+  network:
+    topology: Localnet
+    localnet:
+      {{- if ($value.primary | default false) }}
+      role: Primary
+      {{- else }}
+      role: Secondary
+      {{- end }}
+
+      {{- if $value.physicalNetworkName }}
+      physicalNetworkName: {{ $value.physicalNetworkName }}
+      {{- else }}
+      physicalNetworkName: {{ $.Values.globals.localnet.physicalNetworkName }}
+      {{- end }}
+      vlan:
+        mode: Access
+        access:
+          id: {{ $value.id }}
+      {{- with $value.subnets }}
+      subnets:
+        {{- . | default list | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $value.excludeSubnets }}
+      excludeSubnets:
+        {{- . | default list | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $value.ipam }}
+      ipam:
+        {{- . | default dict | toYaml | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{- end }}
