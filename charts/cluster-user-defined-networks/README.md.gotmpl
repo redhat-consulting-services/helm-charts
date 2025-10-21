@@ -1,0 +1,74 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Usage
+
+```bash
+helm install <release-name> oci://ghcr.io/redhat-consulting-services/helm-charts/cluster-user-defined-networks:1.0.0
+```
+
+### Defining Networks
+
+#### Network with subnet and IPAM enabled
+
+```yaml
+localnet:
+  -
+    # name of the ClusterUserDefinedNetwork
+    name: network-prefix
+    # stage of the ClusterUserDefinedNetwork (used by the stage label selector)
+    stage: prod
+    # whether this is the primary network
+    primary: false
+    # the physical network name to bind to
+    physicalNetworkName: custom-physical-network
+    # VLAN ID for the network
+    id: 10
+    # a list of subnets to allocate from
+    subnets:
+      - cidr: 10.0.0.0/24
+    # a list of subnets to exclude from allocation
+    excludeSubnets:
+      - 10.0.0.0/23
+      - 10.0.0.255/32
+    # enable IPAM for this network
+    ipam:
+      enabled: true
+```
+
+#### Network with IPAM disabled
+
+```yaml
+localnet:
+  -
+    # name of the ClusterUserDefinedNetwork
+    name: network-prefix
+    # stage of the ClusterUserDefinedNetwork (used by the stage label selector)
+    stage: prod
+    # idStart is the starting VLAN ID for this network
+    # Together with idEnd, this creates a range of CUDN's with VLAN IDs from idStart to idEnd
+    idStart: 35
+    # idEnd is the ending VLAN ID for this network
+    # Together with idStart, this creates a range of CUDN's with VLAN IDs from idStart to idEnd
+    idEnd: 36
+    # disable IPAM for this network
+    ipam:
+      enabled: false
+```
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
