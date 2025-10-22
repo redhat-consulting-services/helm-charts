@@ -73,7 +73,7 @@ localnet:
 | globals | object | `{"localnet":{"physicalNetworkName":""}}` | globals contains global settings for the chart |
 | globals.localnet | object | `{"physicalNetworkName":""}` | Default settings for localnet networks |
 | globals.localnet.physicalNetworkName | string | `""` | Default physical network name for localnet networks |
-| labels.stageLabel | string | `"ns.openshift.io/stage"` | The stage label is used to indicate the stage of the environment |
+| labels.stageLabel | string | `"ns.openshift.io/stage"` | if empty or set to null, no stage label will be added |
 | labels.vlanLabel | string | `"networking.openshift.io/vlan"` | The label will be suffixed with the VLAN ID number, e.g. networking.openshift.io/vlan-100 |
 | localnet | list | `[]` | List of ClusterUserDefinedNetworks to create with Localnet topology |
 

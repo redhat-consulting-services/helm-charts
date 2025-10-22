@@ -1,6 +1,7 @@
 # labels is a map of labels to add to the CUDN and to the namespaceSelector. Only the keys stageLabel and vlanLabel are allowed.
 labels:
   # -- The stage label is used to indicate the stage of the environment
+  # -- if empty or set to null, no stage label will be added
   stageLabel: ns.openshift.io/stage
   # -- The vlan label is used to indicate the VLAN ID of the network
   # -- The label will be suffixed with the VLAN ID number, e.g. networking.openshift.io/vlan-100
