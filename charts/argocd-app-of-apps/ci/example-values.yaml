@@ -31,7 +31,15 @@ projects:
 
 applications:
   disco-operators:
+    enabled: true
     annotations:
       argocd.argoproj.io/sync-wave: "0"
     source:
       path: disco-operators
+    extraFields:
+      ignoreDifferences:
+        - kind: ConfigMap
+          name: user-ca-bundle
+          namespace: openshift-gitops
+          jsonPointers:
+          - /data

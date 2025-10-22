@@ -98,7 +98,7 @@ spec:
   {{- end }} {{/* end for with $val.sources */}}
 
   {{- with $val.extraFields }}
-  {{ tpl . | nindent 2 }}
+  {{- . | toYaml | nindent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}
