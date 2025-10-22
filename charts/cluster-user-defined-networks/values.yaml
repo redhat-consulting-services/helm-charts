@@ -27,11 +27,11 @@ localnet: []
   #     - 10.0.0.0/23
   #     - 10.0.0.255/32
   #   ipam:
-  #     enabled: true
+  #     mode: Disabled
 
   # - name: network-prefix
   #   stage: prod
   #   idStart: 35
   #   idEnd: 36
   #   ipam:
-  #     enabled: false
+  #     mode: Disabled
