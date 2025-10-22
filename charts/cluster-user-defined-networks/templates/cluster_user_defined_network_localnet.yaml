@@ -16,12 +16,16 @@ kind: ClusterUserDefinedNetwork
 metadata:
   name: vlan-{{ $i }}-{{ $value.stage }}-{{ $value.name }}
   labels:
+    {{- if and (ne $stageLabel "") ($stageLabel) }}
     {{ $stageLabel }}: {{ $value.stage }}
+    {{- end }}
     {{ $vlanLabel }}: "true"
 spec:
   namespaceSelector:
     matchLabels:
+      {{- if and (ne $stageLabel "") ($stageLabel) }}
       {{ $stageLabel }}: {{ $value.stage }}
+      {{- end }}
       {{ $vlanLabel }}: "true"
   network:
     topology: Localnet
@@ -58,12 +62,16 @@ kind: ClusterUserDefinedNetwork
 metadata:
   name: vlan-{{ $value.id }}-{{ $value.stage }}-{{ $value.name }}
   labels:
+    {{- if and (ne $stageLabel "") ($stageLabel) }}
     {{ $stageLabel }}: {{ $value.stage }}
+    {{- end }}
     {{ $vlanLabel }}: "true"
 spec:
   namespaceSelector:
     matchLabels:
+      {{- if and (ne $stageLabel "") ($stageLabel) }}
       {{ $stageLabel }}: {{ $value.stage }}
+      {{- end }}
       {{ $vlanLabel }}: "true"
   network:
     topology: Localnet
