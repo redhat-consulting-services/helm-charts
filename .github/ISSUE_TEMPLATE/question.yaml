@@ -1,0 +1,26 @@
+name: "❓ Question / Help"
+description: "Ask a question or request guidance about the collection or execution environment."
+title: "[QUESTION] "
+labels: ["question"]
+assignees: []
+projects: ["redhat-consulting-services/1"]
+
+body:
+  - type: input
+    id: chart_name
+    attributes:
+      label: "Chart Name"
+      description: "Which Helm Chart is this question about?"
+      placeholder: "e.g., cluster-user-defined-networks"
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "Question / Issue"
+      description: "Describe your question or the issue you need help with."
+
+  - type: textarea
+    id: attempts
+    attributes:
+      label: "Steps Taken / Attempts"
+      description: "What have you tried so far?"
