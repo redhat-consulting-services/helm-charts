@@ -14,7 +14,7 @@
 apiVersion: k8s.ovn.org/v1
 kind: ClusterUserDefinedNetwork
 metadata:
-  name: vlan-{{ $i }}-{{ $value.stage }}-{{ $value.name }}
+  name: {{ list "vlan" $i ($value.stage | default "") $value.name | compact | join "-" }}
   labels:
     {{- if and (ne $stageLabel "") ($stageLabel) }}
     {{ $stageLabel }}: {{ $value.stage }}
@@ -60,7 +60,7 @@ spec:
 apiVersion: k8s.ovn.org/v1
 kind: ClusterUserDefinedNetwork
 metadata:
-  name: vlan-{{ $value.id }}-{{ $value.stage }}-{{ $value.name }}
+  name: {{ list "vlan" $value.id ($value.stage | default "") $value.name | compact | join "-" }}
   labels:
     {{- if and (ne $stageLabel "") ($stageLabel) }}
     {{ $stageLabel }}: {{ $value.stage }}
