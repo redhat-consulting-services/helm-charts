@@ -1,0 +1,121 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Prerequisites
+
+* This chart expects that a clusterwide ArgoCD instance is already installed and configured in the cluster. 
+* It also expects that a dedicated developer ArgoCD instance is available for the tenant teams to use.
+* The chart has been developed with BANP & ANP (BaselineAdminNetworkPolicies & AdminNetworkPolicies) in mind, but can be used without it as well.
+
+
+## Defining Namespaces for a Tenant
+
+This section defines the array of namespaces to be provisioned for a single tenant. The settings will override the global defaults.
+
+```yaml
+---
+# ArgoCD AppProject specifications
+project:
+  enabled: true
+  name: team-a
+  description: "AppProject for Team A"
+# Allowed repos to use with the developer ArgoCD
+  sourceRepos:
+    - 'https://github-team-a-*'
+  destinations:
+# Allowed namespaces for developer ArgoCD to deploy to
+    - namespace: 'team-a-*'
+      server: https://kubernetes.default.svc
+  roles:
+    - name: developer
+# Permissions for the developer team on the ArgoCD objects
+      policies:
+        - p, proj:team-a:developer, applications, *, team-a/*, allow
+        - p, proj:team-a:developer, repositories, get, team-a/*, allow
+        - p, proj:team-a:developer, clusters, get, *, allow
+        - p, proj:team-a:developer, projects, get, team-a, allow
+# Team or teams to be part of this appProject
+      groups:
+        - team-a-developers
+
+# Namespaces to be created, with or without any default overwrites
+namespaces:
+  - name: team-a-test
+
+    enableResourceQuota: true
+    enableLimitRange: true
+    enableRBAC: true
+
+    resourceQuota:
+      compute:
+        requests.cpu: "5"
+        requests.memory: 10Gi
+        limits.cpu: "10"
+        limits.memory: 20Gi
+
+    rbac:
+      developers:
+        groups:
+          - "team-a-devs"
+      admins:
+        groups:
+          - "team-a-admins"
+```
+
+## Minimal configuration
+
+```yaml
+---
+# ArgoCD AppProject specifications
+project:
+  enabled: true
+  name: team-a
+  description: "AppProject for Team A"
+# Allowed repos to use with the developer ArgoCD
+  sourceRepos:
+    - 'https://github-team-a-*'
+  destinations:
+# Allowed namespaces for developer ArgoCD to deploy to
+    - namespace: 'team-a-*'
+      server: https://kubernetes.default.svc
+  roles:
+    - name: developer
+# Permissions for the developer team on the ArgoCD objects
+      policies:
+        - p, proj:team-a:developer, applications, *, team-a/*, allow
+        - p, proj:team-a:developer, repositories, get, team-a/*, allow
+        - p, proj:team-a:developer, clusters, get, *, allow
+        - p, proj:team-a:developer, projects, get, team-a, allow
+# Team or teams to be part of this appProject
+      groups:
+        - team-a-developers
+
+# Namespaces to be created, with or without any default overwrites
+namespaces:
+  - name: team-a-minimal
+    rbac:
+      developers:
+        groups:
+          - "team-a-devs"
+      admins:
+        groups:
+          - "team-a-admins"
+    # All defaults apply unless overridden
+```
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

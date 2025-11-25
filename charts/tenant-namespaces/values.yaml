@@ -1,0 +1,108 @@
+# -- argocdNamespace is the namespace where the Developer Argo CD instance resides (used for AppProject and delegation).
+argocdNamespace: argocd-dev
+
+# @default -- defaults contains global settings and feature flags applied to all namespaces unless overridden.
+defaults:
+  # -- Labels and annotations applied to all Namespaces being provisioned.
+  labels:
+    # -- Label required for cluster-wide BANP/ANP network policy enforcement.
+    "platform.openshift.io/network-policy": enforced
+    # -- Label required by the OpenShift GitOps Operator to grant permissions to the argocd-dev instance.
+    "argocd.argoproj.io/managed-by": argocd-dev
+
+  # -- Annotations applied to all Namespaces being provisioned.
+  annotations: {}
+
+  # -- enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic.
+  enableNetpolAuditLogging: true
+  # -- enableUserMonitoring enables user-defined Prometheus monitoring for applications.
+  enableUserMonitoring: true
+  # -- enableResourceQuota deploys a Kubernetes ResourceQuota based on resourceQuotaDefaults.
+  enableResourceQuota: false
+  # -- enableLimitRange deploys a Kubernetes LimitRange based on limitRangeDefaults.
+  enableLimitRange: true
+  # -- enableRBAC deploys default RoleBindings (from rbacDefaults) for users.
+  enableRBAC: true
+  # -- enableArgocdRBAC enables deployment of the AppProject resource for Argo CD RBAC.
+  enableArgocdRBAC: true
+
+  # -- limitRange defines default limits applied when enableLimitRange is true.
+  limitRange:
+    # -- Configuration for container-level limits (max, min, default, defaultRequest).
+    container:
+      # Max limits for containers.
+      max:
+        cpu: "4"
+        memory: 4Gi
+      # Min limits for containers.
+      min:
+        cpu: 10m
+        memory: 10Mi
+      # Default limits for containers.
+      default:
+        cpu: 500m
+        memory: 1Gi
+      # Default requests for containers.
+      defaultRequest:
+        cpu: 30m
+        memory: 200Mi
+
+  # -- resourceQuota defines default resource quotas applied when enableResourceQuota is true.
+  resourceQuota:
+    # -- Quotas for compute resources (requests.cpu, limits.memory, etc).
+    compute:
+      requests.cpu: "10"
+      requests.memory: 20Gi
+      limits.cpu: "20"
+      limits.memory: 40Gi
+    # -- Quotas for storage resources (requests.storage, pvc counts, etc).
+    storage:
+      requests.storage: 100Gi
+      persistentvolumeclaims: "10"
+      ephemeral-storage: "50Gi"
+    # -- Quotas for Kubernetes object counts (pods, services, secrets, etc).
+    objects:
+      pods: "50"
+      services: "20"
+      secrets: "100"
+      configmaps: "100"
+      count/deployments.apps: "20"
+      count/statefulsets.apps: "10"
+
+  # -- rbac defines default RBAC settings applied when enableRBAC is true.
+  rbac:
+    # -- Settings for developer role bindings.
+    developers:
+      # -- Whether to create the developer RoleBinding.
+      enabled: true
+      # -- The ClusterRole to bind to the developer groups (e.g., 'edit').
+      clusterRole: edit
+      # -- List of LDAP groups to receive developer access.
+      groups: []
+    # -- Settings for admin role bindings.
+    admins:
+      # -- Whether to create the admin RoleBinding.
+      enabled: true
+      # -- The ClusterRole to bind to the admin groups (e.g., 'admin').
+      clusterRole: admin
+      # -- List of LDAP groups to receive admin access.
+      groups: []
+
+# -- namespaces defines an array of namespace definitions to be created.
+namespaces: []
+  # - # -- name defines the namespaces name
+  #   name: example
+  #   # -- enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. Takes preceden
+  #   enableNetpolAuditLogging: true
+  #   # -- enableClusterMonitoring enables cluster-level monitoring scraping.
+  #   enableClusterMonitoring: false
+  #   # -- enableUserMonitoring enables user-defined Prometheus monitoring for applications.
+  #   enableUserMonitoring: true
+  #   # -- enableResourceQuota deploys a Kubernetes ResourceQuota based on resourceQuotaDefaults.
+  #   enableResourceQuota: false
+  #   # -- enableLimitRange deploys a Kubernetes LimitRange based on limitRangeDefaults.
+  #   enableLimitRange: true
+  #   # -- enableRBAC deploys default RoleBindings (from rbacDefaults) for users.
+  #   enableRBAC: true
+  #   # -- enableArgocdRBAC enables deployment of the AppProject resource for Argo CD RBAC.
+  #   enableArgocdRBAC: true

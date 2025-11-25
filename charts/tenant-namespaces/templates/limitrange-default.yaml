@@ -1,0 +1,28 @@
+{{- range $namespace := .Values.namespaces }}
+{{- /* 1. Start logic check */ -}}
+{{- if include "tenant-namespaces.isEnabled" (dict "context" $namespace "key" "enableLimitRange" "default" $.Values.defaults.enableLimitRange) }}
+{{- $limits := mergeOverwrite (deepCopy $.Values.defaults.limitRange) ($namespace.limitRange | default dict) }}
+---
+kind: LimitRange
+apiVersion: v1
+metadata:
+  name: default
+  namespace: {{ $namespace.name | quote }}
+spec:
+  limits:
+    {{- if $limits.container }}
+    - type: Container
+      {{- toYaml $limits.container | nindent 6 }}
+    {{- end }}
+    {{- if $limits.pod }}
+    - type: Pod
+      {{- toYaml $limits.pod | nindent 6 }}
+    {{- end }}
+    {{- if $limits.pvc }}
+    - type: PersistentVolumeClaim
+      {{- toYaml $limits.pvc | nindent 6 }}
+    {{- end }}
+{{- /* Closes the 'if include' block */ -}}
+{{- end }}
+{{- /* Closes the 'range' block */ -}}
+{{- end }}

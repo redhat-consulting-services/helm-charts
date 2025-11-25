@@ -1,0 +1,5 @@
+apiVersion: v2
+description: A Helm-chart to create namespaces with a baseline configuration of resource
+  quota, limit range and labels.
+name: tenant-namespaces
+version: 0.1.0

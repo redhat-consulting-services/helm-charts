@@ -1,0 +1,33 @@
+{{- range $namespace := .Values.namespaces }}
+{{- /* Check if Resource Quota is enabled */ -}}
+{{- if include "tenant-namespaces.isEnabled" (dict "context" $namespace "key" "enableResourceQuota" "default" $.Values.defaults.enableResourceQuota) }}
+{{- $quotas := mergeOverwrite (deepCopy $.Values.defaults.resourceQuota) ($namespace.resourceQuota | default dict) }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- toYaml $quotas.compute | nindent 4 }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: storage-resources
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- toYaml $quotas.storage | nindent 4 }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: object-counts
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- toYaml $quotas.objects | nindent 4 }}
+{{- end }}
+{{- end }}

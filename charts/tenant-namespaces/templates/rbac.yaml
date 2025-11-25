@@ -1,0 +1,61 @@
+{{- range $namespace := .Values.namespaces }}
+{{- if include "tenant-namespaces.isEnabled" (dict "context" $namespace "key" "enableRBAC" "default" $.Values.defaults.enableRBAC) }}
+{{- $rbac := mergeOverwrite (deepCopy $.Values.defaults.rbac) ($namespace.rbac | default dict) }}
+{{- if and $rbac.developers.enabled $rbac.developers.groups }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developers
+  namespace: {{ $namespace.name | quote }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $rbac.developers.clusterRole }}
+subjects:
+  {{- range $group := $rbac.developers.groups }}
+  - kind: Group
+    name: {{ $group | quote }}
+    apiGroup: rbac.authorization.k8s.io
+  {{- end }}
+{{- end }}
+
+{{- if and $rbac.admins.enabled $rbac.admins.groups }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admins
+  namespace: {{ $namespace.name | quote }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $rbac.admins.clusterRole }}
+subjects:
+  {{- range $group := $rbac.admins.groups }}
+  - kind: Group
+    name: {{ $group | quote }}
+    apiGroup: rbac.authorization.k8s.io
+  {{- end }}
+{{- end }}
+{{- end }} 
+
+{{- if include "tenant-namespaces.isEnabled" (dict "context" $namespace "key" "enableArgocdRBAC" "default" $.Values.defaults.enableArgocdRBAC) }}
+---
+# ArgoCD ServiceAccount RBAC
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-application-controller
+  namespace: {{ $namespace.name | quote }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ printf "%s-argocd-application-controller" $.Values.argocdNamespace }}
+    namespace: {{ $.Values.argocdNamespace }}
+{{- end }}
+
+{{- end }}
