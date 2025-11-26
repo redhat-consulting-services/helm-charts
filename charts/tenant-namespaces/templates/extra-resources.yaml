@@ -2,7 +2,7 @@
 {{- with $namespace.extraResources }}
 {{- range $resource := . }}
 ---
-{{- mergeOverwrite $resource (dict "metadata" (dict "namespace" $namespace.name)) | toYaml }}
+{{ mergeOverwrite $resource (dict "metadata" (dict "namespace" $namespace.name)) | toYaml }}
 {{- end }}
 {{- end }}
 {{- end }}

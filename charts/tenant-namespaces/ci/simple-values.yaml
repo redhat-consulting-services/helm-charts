@@ -113,8 +113,7 @@ defaults:
     enabled: true
     # -- roleBindings of roles to OpenShift groups.
     roleBindings:
-      - # -- name is the name of the RoleBinding to create.
-        name: developers
+      - name: developers
         # -- clusterRole is the name of ClusterRole to bind to the role's groups.
         clusterRole: edit
         # -- groups is a list of OpenShift groups to bind to the role.
@@ -273,8 +272,7 @@ namespaces:
       enabled: true
       # -- roleBindings of roles to OpenShift groups.
       roleBindings:
-        - # -- name is the name of the RoleBinding to create.
-          name: developers
+        - name: developers
           # -- clusterRole is the name of ClusterRole to bind to the role's groups.
           clusterRole: edit
           # -- groups is a list of OpenShift groups to bind to the role.

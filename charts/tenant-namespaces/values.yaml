@@ -112,13 +112,13 @@ defaults:
     # -- whether to enable RBAC by default.
     enabled: false
     # -- roleBindings of roles to OpenShift groups.
-    roleBindings:
-      - # -- name is the name of the RoleBinding to create.
-        name: developers
-        # -- clusterRole is the name of ClusterRole to bind to the role's groups.
-        clusterRole: edit
-        # -- groups is a list of OpenShift groups to bind to the role.
-        groups: []
+    roleBindings: []
+      # - # -- name is the name of the RoleBinding to create.
+      #   name: developers
+      #   # -- clusterRole is the name of ClusterRole to bind to the role's groups.
+      #   clusterRole: edit
+      #   # -- groups is a list of OpenShift groups to bind to the role.
+      #   groups: []
 
 # -- project defines the Argo CD AppProject to create for the tenant namespaces.
 project:
@@ -162,133 +162,133 @@ project:
 
 # -- namespaces defines an array of namespace definitions to be created.
 namespaces: []
-  # -
-  #   # -- name is the name of the Namespace to create.
-  #   name: abc
-  #   # -- namespace defines the configuration for the Namespace.
-  #   namespace:
-  #     # -- labels applied to the Namespace. Merge with defaults.labels.
-  #     labels: {}
-  #     # -- annotations applied to the Namespace. Merge with defaults.annotations.
-  #     annotations: {}
-  #     # -- features contains feature flags applied to this namespace, overriding defaults.features.
-  #     features:
-  #       # -- enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic.
-  #       enableNetpolAuditLogging: false
-  #       # -- enableUserMonitoring enables user-defined Prometheus monitoring for applications.
-  #       enableUserMonitoring: true
-  #       # -- enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace.
-  #       enableCertificateConfigMap: false
-  #   # -- limitRange defines default limits applied when enableLimitRange is true.
-  #   limitRange:
-  #     # -- whether to enable LimitRange by default.
-  #     enabled: true
-  #     # -- name of the LimitRange resource.
-  #     name: my-custom-name
-  #     # -- Configuration for container-level limits (max, min, default, defaultRequest).
-  #     container:
-  #       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
-  #       enabled: true
-  #       # -- values defines the concrete limit values.
-  #       values:
-  #         # -- max limits for containers.
-  #         max:
-  #           # -- cpu defines the maximum CPU limit.
-  #           cpu: "4"
-  #           # -- memory defines the maximum memory limit.
-  #           memory: 4Gi
-  #         # Min limits for containers.
-  #         min:
-  #           cpu: 10m
-  #           memory: 10Mi
-  #         # Default limits for containers.
-  #         default:
-  #           cpu: 500m
-  #           memory: 1Gi
-  #         # Default requests for containers.
-  #         defaultRequest:
-  #           cpu: 30m
-  #           memory: 200Mi
-  #     pod:
-  #       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
-  #       enabled: true
-  #       # -- values defines the concrete limit values.
-  #       values:
-  #         max:
-  #           cpu: "0.5"
-  #           memory: "4Gi"
-  #         min:
-  #           cpu: "0.1"
-  #           memory: "2Gi"
-  #     pvc:
-  #       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
-  #       enabled: true
-  #       # -- values defines the concrete limit values.
-  #       values:
-  #         max:
-  #           storage: 10Gi
-  #         min:
-  #           storage: 1Gi
-  #   # -- resourceQuota defines default resource quotas applied when enableResourceQuota is true.
-  #   resourceQuota:
-  #     # -- whether to enable ResourceQuota by default.
-  #     enabled: true
-  #     # -- compute quotas (requests.cpu, limits.memory, etc).
-  #     compute:
-  #       # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
-  #       enabled: true
-  #       # -- name of the ResourceQuota for compute resources.
-  #       name: compute-resources
-  #       # -- values for compute resource quotas.
-  #       values:
-  #         requests.cpu: "1"
-  #         requests.memory: 2Gi
-  #         limits.cpu: "2"
-  #         limits.memory: 4Gi
-  #     # -- Quotas for storage resources (requests.storage, pvc counts, etc).
-  #     storage:
-  #     # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
-  #       enabled: true
-  #       # -- name of the ResourceQuota for storage resources.
-  #       name: storage-resources
-  #       # -- values for storage resource quotas.
-  #       values:
-  #         requests.storage: 10Gi
-  #         persistentvolumeclaims: "1"
-  #         ephemeral-storage: "5Gi"
-  #     # -- Quotas for Kubernetes object counts (pods, services, secrets, etc).
-  #     objects:
-  #       # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
-  #       enabled: true
-  #       # -- name of the ResourceQuota for compute resources.
-  #       name: objects-resources
-  #       # -- values for objects resource quotas.
-  #       values:
-  #         pods: "5"
-  #         services: "2"
-  #         secrets: "10"
-  #         configmaps: "10"
-  #         count/deployments.apps: "2"
-  #         count/statefulsets.apps: "1"
-  #   # -- rbac defines default RBAC settings applied when enableRBAC is true.
-  #   rbac:
-  #     # -- whether to enable RBAC by default.
-  #     enabled: true
-  #     # -- roleBindings of roles to OpenShift groups.
-  #     roleBindings:
-  #       - # -- name is the name of the RoleBinding to create.
-  #         name: developers
-  #         # -- clusterRole is the name of ClusterRole to bind to the role's groups.
-  #         clusterRole: edit
-  #         # -- groups is a list of OpenShift groups to bind to the role.
-  #         groups: []
-  #   # -- extraResources allows defining additional arbitrary Kubernetes resources to be created in this namespace.
-  #   extraResources: []
-  #     # - apiVersion: v1
-  #     #   kind: ConfigMap
-  #     #   metadata:
-  #     #     name: user-ca-bundle
-  #     #     labels:
-  #     #     config.openshift.io/inject-trusted-cabundle: 'true'
-  #     #   data:
-  #     #     key: value
+# -
+#   # -- name is the name of the Namespace to create.
+#   name: abc
+#   # -- namespace defines the configuration for the Namespace.
+#   namespace:
+#     # -- labels applied to the Namespace. Merge with defaults.labels.
+#     labels: {}
+#     # -- annotations applied to the Namespace. Merge with defaults.annotations.
+#     annotations: {}
+#     # -- features contains feature flags applied to this namespace, overriding defaults.features.
+#     features:
+#       # -- enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic.
+#       enableNetpolAuditLogging: false
+#       # -- enableUserMonitoring enables user-defined Prometheus monitoring for applications.
+#       enableUserMonitoring: true
+#       # -- enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace.
+#       enableCertificateConfigMap: false
+#   # -- limitRange defines default limits applied when enableLimitRange is true.
+#   limitRange:
+#     # -- whether to enable LimitRange by default.
+#     enabled: true
+#     # -- name of the LimitRange resource.
+#     name: my-custom-name
+#     # -- Configuration for container-level limits (max, min, default, defaultRequest).
+#     container:
+#       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+#       enabled: true
+#       # -- values defines the concrete limit values.
+#       values:
+#         # -- max limits for containers.
+#         max:
+#           # -- cpu defines the maximum CPU limit.
+#           cpu: "4"
+#           # -- memory defines the maximum memory limit.
+#           memory: 4Gi
+#         # Min limits for containers.
+#         min:
+#           cpu: 10m
+#           memory: 10Mi
+#         # Default limits for containers.
+#         default:
+#           cpu: 500m
+#           memory: 1Gi
+#         # Default requests for containers.
+#         defaultRequest:
+#           cpu: 30m
+#           memory: 200Mi
+#     pod:
+#       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+#       enabled: true
+#       # -- values defines the concrete limit values.
+#       values:
+#         max:
+#           cpu: "0.5"
+#           memory: "4Gi"
+#         min:
+#           cpu: "0.1"
+#           memory: "2Gi"
+#     pvc:
+#       # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+#       enabled: true
+#       # -- values defines the concrete limit values.
+#       values:
+#         max:
+#           storage: 10Gi
+#         min:
+#           storage: 1Gi
+#   # -- resourceQuota defines default resource quotas applied when enableResourceQuota is true.
+#   resourceQuota:
+#     # -- whether to enable ResourceQuota by default.
+#     enabled: true
+#     # -- compute quotas (requests.cpu, limits.memory, etc).
+#     compute:
+#       # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+#       enabled: true
+#       # -- name of the ResourceQuota for compute resources.
+#       name: compute-resources
+#       # -- values for compute resource quotas.
+#       values:
+#         requests.cpu: "1"
+#         requests.memory: 2Gi
+#         limits.cpu: "2"
+#         limits.memory: 4Gi
+#     # -- Quotas for storage resources (requests.storage, pvc counts, etc).
+#     storage:
+#     # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+#       enabled: true
+#       # -- name of the ResourceQuota for storage resources.
+#       name: storage-resources
+#       # -- values for storage resource quotas.
+#       values:
+#         requests.storage: 10Gi
+#         persistentvolumeclaims: "1"
+#         ephemeral-storage: "5Gi"
+#     # -- Quotas for Kubernetes object counts (pods, services, secrets, etc).
+#     objects:
+#       # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+#       enabled: true
+#       # -- name of the ResourceQuota for compute resources.
+#       name: objects-resources
+#       # -- values for objects resource quotas.
+#       values:
+#         pods: "5"
+#         services: "2"
+#         secrets: "10"
+#         configmaps: "10"
+#         count/deployments.apps: "2"
+#         count/statefulsets.apps: "1"
+#   # -- rbac defines default RBAC settings applied when enableRBAC is true.
+#   rbac:
+#     # -- whether to enable RBAC by default.
+#     enabled: true
+#     # -- roleBindings of roles to OpenShift groups.
+#     roleBindings:
+#       - # -- name is the name of the RoleBinding to create.
+#         name: developers
+#         # -- clusterRole is the name of ClusterRole to bind to the role's groups.
+#         clusterRole: edit
+#         # -- groups is a list of OpenShift groups to bind to the role.
+#         groups: []
+#   # -- extraResources allows defining additional arbitrary Kubernetes resources to be created in this namespace.
+#   extraResources: []
+#     # - apiVersion: v1
+#     #   kind: ConfigMap
+#     #   metadata:
+#     #     name: user-ca-bundle
+#     #     labels:
+#     #     config.openshift.io/inject-trusted-cabundle: 'true'
+#     #   data:
+#     #     key: value
