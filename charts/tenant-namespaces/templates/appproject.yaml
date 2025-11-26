@@ -1,20 +1,42 @@
-{{- if and $.Values.project $.Values.project.enabled }}
+{{- with .Values.project }}
+{{- if .enabled | default false }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: {{ .Values.project.name | quote }}
+  name: {{ .name | quote }}
   namespace: {{ $.Values.argocdNamespace | quote }}
 spec:
-  description: {{ .Values.project.description | quote }}
+  {{- with .description }}
+  description: {{ . | quote }}
+  {{- end }}
+  {{- with .sourceRepos }}
   sourceRepos:
-    {{- toYaml .Values.project.sourceRepos | nindent 4 }}
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .destinations }}
   destinations:
-    {{- toYaml .Values.project.destinations | nindent 4 }}
-  clusterResourceWhitelist: []
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .clusterResourceWhitelist }}
+  clusterResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .clusterResourceBlacklist }}
+  clusterResourceBlacklist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceWhitelist }}
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceBlacklist }}
+  namespaceResourceBlacklist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .roles }}
   roles:
-    {{- toYaml .Values.project.roles | nindent 4 }}
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
 {{- end }}

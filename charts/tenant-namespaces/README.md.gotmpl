@@ -12,100 +12,171 @@
 * It also expects that a dedicated developer ArgoCD instance is available for the tenant teams to use.
 * The chart has been developed with BANP & ANP (BaselineAdminNetworkPolicies & AdminNetworkPolicies) in mind, but can be used without it as well.
 
-
 ## Defining Namespaces for a Tenant
 
 This section defines the array of namespaces to be provisioned for a single tenant. The settings will override the global defaults.
 
 ```yaml
 ---
-# ArgoCD AppProject specifications
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
+
+  limitRange:
+    enabled: true
+    name: default
+    container:
+      enabled: true
+      values:
+        max:
+          cpu: "4"
+          memory: 4Gi
+        min:
+          cpu: 10m
+          memory: 10Mi
+        default:
+          cpu: 500m
+          memory: 1Gi
+        defaultRequest:
+          cpu: 30m
+          memory: 200Mi
+    pod:
+      enabled: true
+      values:
+        max:
+          cpu: "2"
+          memory: "1Gi"
+        min:
+          cpu: "200m"
+          memory: "6Mi"
+    pvc:
+      enabled: true
+      values:
+        max:
+          storage: 10Gi
+        min:
+          storage: 1Gi
+
+  resourceQuota:
+    enabled: true
+    compute:
+      enabled: true
+      name: compute-resources
+      values:
+        requests.cpu: "10"
+        requests.memory: 20Gi
+        limits.cpu: "20"
+        limits.memory: 40Gi
+    storage:
+      enabled: true
+      name: storage-resources
+      values:
+        requests.storage: 100Gi
+        persistentvolumeclaims: "10"
+        ephemeral-storage: "50Gi"
+    objects:
+      enabled: true
+      name: objects-resources
+      values:
+        pods: "50"
+        services: "20"
+        secrets: "100"
+        configmaps: "100"
+        count/deployments.apps: "20"
+        count/statefulsets.apps: "10"
+
+  rbac:
+    enabled: true
+    roleBindings:
+      - name: developers
+        clusterRole: edit
+        groups: []
+
 project:
+  name: "my-app-project"
+  namespace: ""
   enabled: true
-  name: team-a
-  description: "AppProject for Team A"
-# Allowed repos to use with the developer ArgoCD
+  description: ""
   sourceRepos:
-    - 'https://github-team-a-*'
+    - https://github.com/example/repo.git
   destinations:
-# Allowed namespaces for developer ArgoCD to deploy to
-    - namespace: 'team-a-*'
-      server: https://kubernetes.default.svc
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
   roles:
-    - name: developer
-# Permissions for the developer team on the ArgoCD objects
-      policies:
-        - p, proj:team-a:developer, applications, *, team-a/*, allow
-        - p, proj:team-a:developer, repositories, get, team-a/*, allow
-        - p, proj:team-a:developer, clusters, get, *, allow
-        - p, proj:team-a:developer, projects, get, team-a, allow
-# Team or teams to be part of this appProject
+    - name: example-role
       groups:
-        - team-a-developers
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
 
-# Namespaces to be created, with or without any default overwrites
 namespaces:
-  - name: team-a-test
-
-    enableResourceQuota: true
-    enableLimitRange: true
-    enableRBAC: true
-
-    resourceQuota:
-      compute:
-        requests.cpu: "5"
-        requests.memory: 10Gi
-        limits.cpu: "10"
-        limits.memory: 20Gi
-
-    rbac:
-      developers:
-        groups:
-          - "team-a-devs"
-      admins:
-        groups:
-          - "team-a-admins"
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
 ```
 
 ## Minimal configuration
 
 ```yaml
----
-# ArgoCD AppProject specifications
-project:
-  enabled: true
-  name: team-a
-  description: "AppProject for Team A"
-# Allowed repos to use with the developer ArgoCD
-  sourceRepos:
-    - 'https://github-team-a-*'
-  destinations:
-# Allowed namespaces for developer ArgoCD to deploy to
-    - namespace: 'team-a-*'
-      server: https://kubernetes.default.svc
-  roles:
-    - name: developer
-# Permissions for the developer team on the ArgoCD objects
-      policies:
-        - p, proj:team-a:developer, applications, *, team-a/*, allow
-        - p, proj:team-a:developer, repositories, get, team-a/*, allow
-        - p, proj:team-a:developer, clusters, get, *, allow
-        - p, proj:team-a:developer, projects, get, team-a, allow
-# Team or teams to be part of this appProject
-      groups:
-        - team-a-developers
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
 
-# Namespaces to be created, with or without any default overwrites
+project:
+  name: "my-app-project"
+  namespace: ""
+  enabled: true
+  description: ""
+  sourceRepos:
+    - https://github.com/example/repo.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: example-role
+      groups:
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
+
 namespaces:
-  - name: team-a-minimal
-    rbac:
-      developers:
-        groups:
-          - "team-a-devs"
-      admins:
-        groups:
-          - "team-a-admins"
-    # All defaults apply unless overridden
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
 ```
 
 {{ template "chart.homepageLine" . }}

@@ -1,5 +1,5 @@
 {{- range $namespace := .Values.namespaces }}
-{{- $mergedData := (mergeOverwrite (deepCopy $.Values.defaults) (deepCopy $namespace)) }}
+{{- $mergedData := (mergeOverwrite (deepCopy $.Values.defaults.namespace) (deepCopy $namespace)) }}
 ---
 apiVersion: v1
 kind: Namespace

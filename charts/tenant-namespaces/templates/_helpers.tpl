@@ -44,7 +44,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Custom labels for OpenShift monitoring
 */}}
 {{ define "tenant-namespaces.custom-labels" }}
-{{- if .enableUserMonitoring }}
+{{- if .features.enableUserMonitoring }}
 openshift.io/user-monitoring: "true"
 {{- end }}
 {{- range $k, $v := .labels }}
@@ -56,7 +56,7 @@ openshift.io/user-monitoring: "true"
 Custom annotations for OVN Audit logging
 */}}
 {{ define "tenant-namespaces.custom-annotations" }}
-{{- if .enableNetpolAuditLogging }}
+{{- if .features.enableNetpolAuditLogging }}
 k8s.ovn.org/acl-logging: |-
   {
     "deny": "info",

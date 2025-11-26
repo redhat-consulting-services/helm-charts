@@ -16,126 +16,261 @@ This section defines the array of namespaces to be provisioned for a single tena
 
 ```yaml
 ---
-# ArgoCD AppProject specifications
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
+
+  limitRange:
+    enabled: true
+    name: default
+    container:
+      enabled: true
+      values:
+        max:
+          cpu: "4"
+          memory: 4Gi
+        min:
+          cpu: 10m
+          memory: 10Mi
+        default:
+          cpu: 500m
+          memory: 1Gi
+        defaultRequest:
+          cpu: 30m
+          memory: 200Mi
+    pod:
+      enabled: true
+      values:
+        max:
+          cpu: "2"
+          memory: "1Gi"
+        min:
+          cpu: "200m"
+          memory: "6Mi"
+    pvc:
+      enabled: true
+      values:
+        max:
+          storage: 10Gi
+        min:
+          storage: 1Gi
+
+  resourceQuota:
+    enabled: true
+    compute:
+      enabled: true
+      name: compute-resources
+      values:
+        requests.cpu: "10"
+        requests.memory: 20Gi
+        limits.cpu: "20"
+        limits.memory: 40Gi
+    storage:
+      enabled: true
+      name: storage-resources
+      values:
+        requests.storage: 100Gi
+        persistentvolumeclaims: "10"
+        ephemeral-storage: "50Gi"
+    objects:
+      enabled: true
+      name: objects-resources
+      values:
+        pods: "50"
+        services: "20"
+        secrets: "100"
+        configmaps: "100"
+        count/deployments.apps: "20"
+        count/statefulsets.apps: "10"
+
+  rbac:
+    enabled: true
+    roleBindings:
+      - name: developers
+        clusterRole: edit
+        groups: []
+
 project:
+  name: "my-app-project"
+  namespace: "openshift-gitops-developer"
   enabled: true
-  name: team-a
-  description: "AppProject for Team A"
-# Allowed repos to use with the developer ArgoCD
+  description: ""
   sourceRepos:
-    - 'https://github-team-a-*'
+    - https://github.com/example/repo.git
   destinations:
-# Allowed namespaces for developer ArgoCD to deploy to
-    - namespace: 'team-a-*'
-      server: https://kubernetes.default.svc
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
   roles:
-    - name: developer
-# Permissions for the developer team on the ArgoCD objects
-      policies:
-        - p, proj:team-a:developer, applications, *, team-a/*, allow
-        - p, proj:team-a:developer, repositories, get, team-a/*, allow
-        - p, proj:team-a:developer, clusters, get, *, allow
-        - p, proj:team-a:developer, projects, get, team-a, allow
-# Team or teams to be part of this appProject
+    - name: example-role
       groups:
-        - team-a-developers
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
 
-# Namespaces to be created, with or without any default overwrites
 namespaces:
-  - name: team-a-test
-
-    enableResourceQuota: true
-    enableLimitRange: true
-    enableRBAC: true
-
-    resourceQuota:
-      compute:
-        requests.cpu: "5"
-        requests.memory: 10Gi
-        limits.cpu: "10"
-        limits.memory: 20Gi
-
-    rbac:
-      developers:
-        groups:
-          - "team-a-devs"
-      admins:
-        groups:
-          - "team-a-admins"
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
 ```
 
 ## Minimal configuration
 
 ```yaml
----
-# ArgoCD AppProject specifications
-project:
-  enabled: true
-  name: team-a
-  description: "AppProject for Team A"
-# Allowed repos to use with the developer ArgoCD
-  sourceRepos:
-    - 'https://github-team-a-*'
-  destinations:
-# Allowed namespaces for developer ArgoCD to deploy to
-    - namespace: 'team-a-*'
-      server: https://kubernetes.default.svc
-  roles:
-    - name: developer
-# Permissions for the developer team on the ArgoCD objects
-      policies:
-        - p, proj:team-a:developer, applications, *, team-a/*, allow
-        - p, proj:team-a:developer, repositories, get, team-a/*, allow
-        - p, proj:team-a:developer, clusters, get, *, allow
-        - p, proj:team-a:developer, projects, get, team-a, allow
-# Team or teams to be part of this appProject
-      groups:
-        - team-a-developers
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
 
-# Namespaces to be created, with or without any default overwrites
+project:
+  name: "my-app-project"
+  namespace: "openshift-gitops-developer"
+  enabled: true
+  description: ""
+  sourceRepos:
+    - https://github.com/example/repo.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: example-role
+      groups:
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
+
 namespaces:
-  - name: team-a-minimal
-    rbac:
-      developers:
-        groups:
-          - "team-a-devs"
-      admins:
-        groups:
-          - "team-a-admins"
-    # All defaults apply unless overridden
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
 ```
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| argocdNamespace | string | `"argocd-dev"` | argocdNamespace is the namespace where the Developer Argo CD instance resides (used for AppProject and delegation). |
-| defaults.annotations | object | `{}` | Annotations applied to all Namespaces being provisioned. |
-| defaults.enableArgocdRBAC | bool | `true` | enableArgocdRBAC enables deployment of the AppProject resource for Argo CD RBAC. |
-| defaults.enableLimitRange | bool | `true` | enableLimitRange deploys a Kubernetes LimitRange based on limitRangeDefaults. |
-| defaults.enableNetpolAuditLogging | bool | `true` | enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. |
-| defaults.enableRBAC | bool | `true` | enableRBAC deploys default RoleBindings (from rbacDefaults) for users. |
-| defaults.enableResourceQuota | bool | `false` | enableResourceQuota deploys a Kubernetes ResourceQuota based on resourceQuotaDefaults. |
-| defaults.enableUserMonitoring | bool | `true` | enableUserMonitoring enables user-defined Prometheus monitoring for applications. |
-| defaults.labels | object | `{"argocd.argoproj.io/managed-by":"argocd-dev","platform.openshift.io/network-policy":"enforced"}` | Labels and annotations applied to all Namespaces being provisioned. |
-| defaults.labels."argocd.argoproj.io/managed-by" | string | `"argocd-dev"` | Label required by the OpenShift GitOps Operator to grant permissions to the argocd-dev instance. |
-| defaults.labels."platform.openshift.io/network-policy" | string | `"enforced"` | Label required for cluster-wide BANP/ANP network policy enforcement. |
-| defaults.limitRange | object | `{"container":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}}` | limitRange defines default limits applied when enableLimitRange is true. |
-| defaults.limitRange.container | object | `{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}` | Configuration for container-level limits (max, min, default, defaultRequest). |
-| defaults.rbac | object | `{"admins":{"clusterRole":"admin","enabled":true,"groups":[]},"developers":{"clusterRole":"edit","enabled":true,"groups":[]}}` | rbac defines default RBAC settings applied when enableRBAC is true. |
-| defaults.rbac.admins | object | `{"clusterRole":"admin","enabled":true,"groups":[]}` | Settings for admin role bindings. |
-| defaults.rbac.admins.clusterRole | string | `"admin"` | The ClusterRole to bind to the admin groups (e.g., 'admin'). |
-| defaults.rbac.admins.enabled | bool | `true` | Whether to create the admin RoleBinding. |
-| defaults.rbac.admins.groups | list | `[]` | List of LDAP groups to receive admin access. |
-| defaults.rbac.developers | object | `{"clusterRole":"edit","enabled":true,"groups":[]}` | Settings for developer role bindings. |
-| defaults.rbac.developers.clusterRole | string | `"edit"` | The ClusterRole to bind to the developer groups (e.g., 'edit'). |
-| defaults.rbac.developers.enabled | bool | `true` | Whether to create the developer RoleBinding. |
-| defaults.rbac.developers.groups | list | `[]` | List of LDAP groups to receive developer access. |
-| defaults.resourceQuota | object | `{"compute":{"limits.cpu":"20","limits.memory":"40Gi","requests.cpu":"10","requests.memory":"20Gi"},"objects":{"configmaps":"100","count/deployments.apps":"20","count/statefulsets.apps":"10","pods":"50","secrets":"100","services":"20"},"storage":{"ephemeral-storage":"50Gi","persistentvolumeclaims":"10","requests.storage":"100Gi"}}` | resourceQuota defines default resource quotas applied when enableResourceQuota is true. |
-| defaults.resourceQuota.compute | object | `{"limits.cpu":"20","limits.memory":"40Gi","requests.cpu":"10","requests.memory":"20Gi"}` | Quotas for compute resources (requests.cpu, limits.memory, etc). |
-| defaults.resourceQuota.objects | object | `{"configmaps":"100","count/deployments.apps":"20","count/statefulsets.apps":"10","pods":"50","secrets":"100","services":"20"}` | Quotas for Kubernetes object counts (pods, services, secrets, etc). |
-| defaults.resourceQuota.storage | object | `{"ephemeral-storage":"50Gi","persistentvolumeclaims":"10","requests.storage":"100Gi"}` | Quotas for storage resources (requests.storage, pvc counts, etc). |
-| namespaces | list | `[]` | namespaces defines an array of namespace definitions to be created. |
+| defaults.limitRange | object | `{"container":{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}},"enabled":false,"name":"default","pod":{"enabled":true,"values":{"max":{"cpu":"2","memory":"1Gi"},"min":{"cpu":"200m","memory":"6Mi"}}},"pvc":{"enabled":true,"values":{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}}}` | limitRange defines default limits applied when enableLimitRange is true. |
+| defaults.limitRange.container | object | `{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}}` | Configuration for container-level limits (max, min, default, defaultRequest). |
+| defaults.limitRange.container.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| defaults.limitRange.container.values | object | `{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}` | values defines the concrete limit values. |
+| defaults.limitRange.container.values.max | object | `{"cpu":"4","memory":"4Gi"}` | max limits for containers. |
+| defaults.limitRange.container.values.max.cpu | string | `"4"` | cpu defines the maximum CPU limit. |
+| defaults.limitRange.container.values.max.memory | string | `"4Gi"` | memory defines the maximum memory limit. |
+| defaults.limitRange.enabled | bool | `false` | whether to enable LimitRange by default. |
+| defaults.limitRange.name | string | `"default"` | name of the LimitRange resource. |
+| defaults.limitRange.pod.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| defaults.limitRange.pod.values | object | `{"max":{"cpu":"2","memory":"1Gi"},"min":{"cpu":"200m","memory":"6Mi"}}` | values defines the concrete limit values. |
+| defaults.limitRange.pvc.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| defaults.limitRange.pvc.values | object | `{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}` | values defines the concrete limit values. |
+| defaults.namespace.annotations | object | `{}` | Annotations applied to all Namespaces being provisioned. |
+| defaults.namespace.features | object | `{"enableCertificateConfigMap":true,"enableNetpolAuditLogging":true,"enableUserMonitoring":true}` | features contains feature flags applied to all namespaces unless overridden. |
+| defaults.namespace.features.enableCertificateConfigMap | bool | `true` | enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace. |
+| defaults.namespace.features.enableNetpolAuditLogging | bool | `true` | enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. |
+| defaults.namespace.features.enableUserMonitoring | bool | `true` | enableUserMonitoring enables user-defined Prometheus monitoring for applications. |
+| defaults.namespace.labels | object | `{}` | Labels applied to all Namespaces being provisioned. |
+| defaults.rbac | object | `{"enabled":false,"roleBindings":[{"clusterRole":"edit","groups":[],"name":"developers"}]}` | rbac defines default RBAC settings applied when enableRBAC is true. |
+| defaults.rbac.enabled | bool | `false` | whether to enable RBAC by default. |
+| defaults.rbac.roleBindings | list | `[{"clusterRole":"edit","groups":[],"name":"developers"}]` | roleBindings of roles to OpenShift groups. |
+| defaults.rbac.roleBindings[0].clusterRole | string | `"edit"` | clusterRole is the name of ClusterRole to bind to the role's groups. |
+| defaults.rbac.roleBindings[0].groups | list | `[]` | groups is a list of OpenShift groups to bind to the role. |
+| defaults.rbac.roleBindings[0].name | string | `"developers"` | name is the name of the RoleBinding to create. |
+| defaults.resourceQuota | object | `{"compute":{"enabled":true,"name":"compute-resources","values":{"limits.cpu":"20","limits.memory":"40Gi","requests.cpu":"10","requests.memory":"20Gi"}},"enabled":false,"objects":{"enabled":true,"name":"objects-resources","values":{"configmaps":"100","count/deployments.apps":"20","count/statefulsets.apps":"10","pods":"50","secrets":"100","services":"20"}},"storage":{"enabled":true,"name":"storage-resources","values":{"ephemeral-storage":"50Gi","persistentvolumeclaims":"10","requests.storage":"100Gi"}}}` | resourceQuota defines default resource quotas applied when enableResourceQuota is true. |
+| defaults.resourceQuota.compute | object | `{"enabled":true,"name":"compute-resources","values":{"limits.cpu":"20","limits.memory":"40Gi","requests.cpu":"10","requests.memory":"20Gi"}}` | compute quotas (requests.cpu, limits.memory, etc). |
+| defaults.resourceQuota.compute.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| defaults.resourceQuota.compute.name | string | `"compute-resources"` | name of the ResourceQuota for compute resources. |
+| defaults.resourceQuota.compute.values | object | `{"limits.cpu":"20","limits.memory":"40Gi","requests.cpu":"10","requests.memory":"20Gi"}` | values for compute resource quotas. |
+| defaults.resourceQuota.enabled | bool | `false` | whether to enable ResourceQuota by default. |
+| defaults.resourceQuota.objects | object | `{"enabled":true,"name":"objects-resources","values":{"configmaps":"100","count/deployments.apps":"20","count/statefulsets.apps":"10","pods":"50","secrets":"100","services":"20"}}` | Quotas for Kubernetes object counts (pods, services, secrets, etc). |
+| defaults.resourceQuota.objects.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| defaults.resourceQuota.objects.name | string | `"objects-resources"` | name of the ResourceQuota for compute resources. |
+| defaults.resourceQuota.objects.values | object | `{"configmaps":"100","count/deployments.apps":"20","count/statefulsets.apps":"10","pods":"50","secrets":"100","services":"20"}` | values for objects resource quotas. |
+| defaults.resourceQuota.storage | object | `{"enabled":true,"name":"storage-resources","values":{"ephemeral-storage":"50Gi","persistentvolumeclaims":"10","requests.storage":"100Gi"}}` | Quotas for storage resources (requests.storage, pvc counts, etc). |
+| defaults.resourceQuota.storage.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| defaults.resourceQuota.storage.name | string | `"storage-resources"` | name of the ResourceQuota for storage resources. |
+| defaults.resourceQuota.storage.values | object | `{"ephemeral-storage":"50Gi","persistentvolumeclaims":"10","requests.storage":"100Gi"}` | values for storage resource quotas. |
+| namespaces | list | `[{"extraResources":[],"limitRange":{"container":{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}},"enabled":true,"name":"my-custom-name","pod":{"enabled":true,"values":{"max":{"cpu":"0.5","memory":"4Gi"},"min":{"cpu":"0.1","memory":"2Gi"}}},"pvc":{"enabled":true,"values":{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}}},"name":"abc","namespace":{"annotations":{},"features":{"enableCertificateConfigMap":false,"enableNetpolAuditLogging":false,"enableUserMonitoring":true},"labels":{}},"rbac":{"enabled":true,"roleBindings":[{"clusterRole":"edit","groups":[],"name":"developers"}]},"resourceQuota":{"compute":{"enabled":true,"name":"compute-resources","values":{"limits.cpu":"2","limits.memory":"4Gi","requests.cpu":"1","requests.memory":"2Gi"}},"enabled":true,"objects":{"enabled":true,"name":"objects-resources","values":{"configmaps":"10","count/deployments.apps":"2","count/statefulsets.apps":"1","pods":"5","secrets":"10","services":"2"}},"storage":{"enabled":true,"name":"storage-resources","values":{"ephemeral-storage":"5Gi","persistentvolumeclaims":"1","requests.storage":"10Gi"}}}}]` | namespaces defines an array of namespace definitions to be created. |
+| namespaces[0].extraResources | list | `[]` | extraResources allows defining additional arbitrary Kubernetes resources to be created in this namespace. |
+| namespaces[0].limitRange | object | `{"container":{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}},"enabled":true,"name":"my-custom-name","pod":{"enabled":true,"values":{"max":{"cpu":"0.5","memory":"4Gi"},"min":{"cpu":"0.1","memory":"2Gi"}}},"pvc":{"enabled":true,"values":{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}}}` | limitRange defines default limits applied when enableLimitRange is true. |
+| namespaces[0].limitRange.container | object | `{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}}` | Configuration for container-level limits (max, min, default, defaultRequest). |
+| namespaces[0].limitRange.container.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| namespaces[0].limitRange.container.values | object | `{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}` | values defines the concrete limit values. |
+| namespaces[0].limitRange.container.values.max | object | `{"cpu":"4","memory":"4Gi"}` | max limits for containers. |
+| namespaces[0].limitRange.container.values.max.cpu | string | `"4"` | cpu defines the maximum CPU limit. |
+| namespaces[0].limitRange.container.values.max.memory | string | `"4Gi"` | memory defines the maximum memory limit. |
+| namespaces[0].limitRange.enabled | bool | `true` | whether to enable LimitRange by default. |
+| namespaces[0].limitRange.name | string | `"my-custom-name"` | name of the LimitRange resource. |
+| namespaces[0].limitRange.pod.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| namespaces[0].limitRange.pod.values | object | `{"max":{"cpu":"0.5","memory":"4Gi"},"min":{"cpu":"0.1","memory":"2Gi"}}` | values defines the concrete limit values. |
+| namespaces[0].limitRange.pvc.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
+| namespaces[0].limitRange.pvc.values | object | `{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}` | values defines the concrete limit values. |
+| namespaces[0].name | string | `"abc"` | name is the name of the Namespace to create. |
+| namespaces[0].namespace | object | `{"annotations":{},"features":{"enableCertificateConfigMap":false,"enableNetpolAuditLogging":false,"enableUserMonitoring":true},"labels":{}}` | namespace defines the configuration for the Namespace. |
+| namespaces[0].namespace.annotations | object | `{}` | annotations applied to the Namespace. Merge with defaults.annotations. |
+| namespaces[0].namespace.features | object | `{"enableCertificateConfigMap":false,"enableNetpolAuditLogging":false,"enableUserMonitoring":true}` | features contains feature flags applied to this namespace, overriding defaults.features. |
+| namespaces[0].namespace.features.enableCertificateConfigMap | bool | `false` | enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace. |
+| namespaces[0].namespace.features.enableNetpolAuditLogging | bool | `false` | enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. |
+| namespaces[0].namespace.features.enableUserMonitoring | bool | `true` | enableUserMonitoring enables user-defined Prometheus monitoring for applications. |
+| namespaces[0].namespace.labels | object | `{}` | labels applied to the Namespace. Merge with defaults.labels. |
+| namespaces[0].rbac | object | `{"enabled":true,"roleBindings":[{"clusterRole":"edit","groups":[],"name":"developers"}]}` | rbac defines default RBAC settings applied when enableRBAC is true. |
+| namespaces[0].rbac.enabled | bool | `true` | whether to enable RBAC by default. |
+| namespaces[0].rbac.roleBindings | list | `[{"clusterRole":"edit","groups":[],"name":"developers"}]` | roleBindings of roles to OpenShift groups. |
+| namespaces[0].rbac.roleBindings[0].clusterRole | string | `"edit"` | clusterRole is the name of ClusterRole to bind to the role's groups. |
+| namespaces[0].rbac.roleBindings[0].groups | list | `[]` | groups is a list of OpenShift groups to bind to the role. |
+| namespaces[0].rbac.roleBindings[0].name | string | `"developers"` | name is the name of the RoleBinding to create. |
+| namespaces[0].resourceQuota | object | `{"compute":{"enabled":true,"name":"compute-resources","values":{"limits.cpu":"2","limits.memory":"4Gi","requests.cpu":"1","requests.memory":"2Gi"}},"enabled":true,"objects":{"enabled":true,"name":"objects-resources","values":{"configmaps":"10","count/deployments.apps":"2","count/statefulsets.apps":"1","pods":"5","secrets":"10","services":"2"}},"storage":{"enabled":true,"name":"storage-resources","values":{"ephemeral-storage":"5Gi","persistentvolumeclaims":"1","requests.storage":"10Gi"}}}` | resourceQuota defines default resource quotas applied when enableResourceQuota is true. |
+| namespaces[0].resourceQuota.compute | object | `{"enabled":true,"name":"compute-resources","values":{"limits.cpu":"2","limits.memory":"4Gi","requests.cpu":"1","requests.memory":"2Gi"}}` | compute quotas (requests.cpu, limits.memory, etc). |
+| namespaces[0].resourceQuota.compute.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| namespaces[0].resourceQuota.compute.name | string | `"compute-resources"` | name of the ResourceQuota for compute resources. |
+| namespaces[0].resourceQuota.compute.values | object | `{"limits.cpu":"2","limits.memory":"4Gi","requests.cpu":"1","requests.memory":"2Gi"}` | values for compute resource quotas. |
+| namespaces[0].resourceQuota.enabled | bool | `true` | whether to enable ResourceQuota by default. |
+| namespaces[0].resourceQuota.objects | object | `{"enabled":true,"name":"objects-resources","values":{"configmaps":"10","count/deployments.apps":"2","count/statefulsets.apps":"1","pods":"5","secrets":"10","services":"2"}}` | Quotas for Kubernetes object counts (pods, services, secrets, etc). |
+| namespaces[0].resourceQuota.objects.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| namespaces[0].resourceQuota.objects.name | string | `"objects-resources"` | name of the ResourceQuota for compute resources. |
+| namespaces[0].resourceQuota.objects.values | object | `{"configmaps":"10","count/deployments.apps":"2","count/statefulsets.apps":"1","pods":"5","secrets":"10","services":"2"}` | values for objects resource quotas. |
+| namespaces[0].resourceQuota.storage | object | `{"enabled":true,"name":"storage-resources","values":{"ephemeral-storage":"5Gi","persistentvolumeclaims":"1","requests.storage":"10Gi"}}` | Quotas for storage resources (requests.storage, pvc counts, etc). |
+| namespaces[0].resourceQuota.storage.enabled | bool | `true` | enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true. |
+| namespaces[0].resourceQuota.storage.name | string | `"storage-resources"` | name of the ResourceQuota for storage resources. |
+| namespaces[0].resourceQuota.storage.values | object | `{"ephemeral-storage":"5Gi","persistentvolumeclaims":"1","requests.storage":"10Gi"}` | values for storage resource quotas. |
+| project | object | `{"clusterResourceBlacklist":[],"clusterResourceWhitelist":[],"description":"","destinations":[],"enabled":false,"name":"","namespace":"","namespaceResourceBlacklist":[],"namespaceResourceWhitelist":[],"roles":[],"sourceRepos":[]}` | project defines the Argo CD AppProject to create for the tenant namespaces. |
+| project.description | string | `""` | description is an optional description for the AppProject. |
+| project.destinations | list | `[]` | destinations is a list of allowed deployment destinations for applications in this project. |
+| project.enabled | bool | `false` | enable of disable the project resource creation |
+| project.name | string | `""` | name is the name of the Argo CD AppProject to create. |
+| project.namespace | string | `""` | argocdNamespace is the namespace where the Developer Argo CD instance resides (used for AppProject and delegation). |
+| project.roles | list | `[]` | roles is a list of roles and their policies for this project. |
+| project.sourceRepos | list | `[]` | sourceRepos is a list of allowed source repositories for applications in this project. |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

@@ -1,6 +1,5 @@
 {{- range $namespace := .Values.namespaces }}
 {{- $resourceQuota := mergeOverwrite (deepCopy $.Values.defaults.resourceQuota) ($namespace.resourceQuota | default dict) }}
-{{- /* Check if Resource Quota is enabled */ -}}
 {{- if $resourceQuota.enabled | default false }}
 {{- with $resourceQuota.compute }}
 {{- if .enabled | default false }}
@@ -41,7 +40,5 @@ spec:
     {{- .values | toYaml | nindent 4 }}
 {{- end }}
 {{- end }}
-{{ /* end for $resourceQuota.objects */ }}
 {{- end }}
-{{ /* end for range $namespace */ }}
 {{- end }}

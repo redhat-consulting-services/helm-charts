@@ -1,0 +1,8 @@
+{{- range $namespace := .Values.namespaces }}
+{{- with $namespace.extraResources }}
+{{- range $resource := . }}
+---
+{{- mergeOverwrite $resource (dict "metadata" (dict "namespace" $namespace.name)) | toYaml }}
+{{- end }}
+{{- end }}
+{{- end }}

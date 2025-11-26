@@ -19,7 +19,5 @@ subjects:
     apiGroup: rbac.authorization.k8s.io
   {{- end }}
 {{- end }}
-{{ /* end for $rbac.enabled */ }}
 {{- end }}
-{{ /* end for range $namespace */ }}
 {{- end }}
