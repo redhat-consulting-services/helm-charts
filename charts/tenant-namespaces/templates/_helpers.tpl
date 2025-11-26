@@ -40,51 +40,6 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-Custom labels for OpenShift monitoring
-
-*/}}
-
-{{/*
-Selector labels
-*/}}
-{{- define "tenant-namespaces.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "tenant-namespaces.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "tenant-namespaces.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "tenant-namespaces.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
-Check if a feature is enabled, handling the "false" boolean trap.
-Returns "true" (string) if enabled, or empty string if disabled.
-Usage: {{ include "tenant-namespaces.isEnabled" (dict "context" $namespaceCtx "key" "featureKey" "default" $globalDefault) }}
-*/}}
-{{- define "tenant-namespaces.isEnabled" -}}
-{{- $result := .default -}}
-{{- if hasKey .context .key -}}
-  {{- $result = get .context .key -}}
-{{- end -}}
-{{- if $result -}}
-true
-{{- end -}}
-{{- end -}}
-
-
-
-
-
-
-
-
 {{/*
 Custom labels for OpenShift monitoring
 */}}

@@ -17,76 +17,114 @@ defaults:
   enableNetpolAuditLogging: true
   # -- enableUserMonitoring enables user-defined Prometheus monitoring for applications.
   enableUserMonitoring: true
-  # -- enableResourceQuota deploys a Kubernetes ResourceQuota based on resourceQuotaDefaults.
-  enableResourceQuota: false
-  # -- enableLimitRange deploys a Kubernetes LimitRange based on limitRangeDefaults.
-  enableLimitRange: true
-  # -- enableRBAC deploys default RoleBindings (from rbacDefaults) for users.
-  enableRBAC: true
   # -- enableArgocdRBAC enables deployment of the AppProject resource for Argo CD RBAC.
   enableArgocdRBAC: true
 
   # -- limitRange defines default limits applied when enableLimitRange is true.
   limitRange:
+    # -- whether to enable LimitRange by default.
+    enabled: false
+    # -- name of the LimitRange resource.
+    name: default
     # -- Configuration for container-level limits (max, min, default, defaultRequest).
     container:
-      # Max limits for containers.
-      max:
-        cpu: "4"
-        memory: 4Gi
-      # Min limits for containers.
-      min:
-        cpu: 10m
-        memory: 10Mi
-      # Default limits for containers.
-      default:
-        cpu: 500m
-        memory: 1Gi
-      # Default requests for containers.
-      defaultRequest:
-        cpu: 30m
-        memory: 200Mi
+      # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+      enabled: true
+      # -- values defines the concrete limit values.
+      values:
+        # -- max limits for containers.
+        max:
+          # -- cpu defines the maximum CPU limit.
+          cpu: "4"
+          # -- memory defines the maximum memory limit.
+          memory: 4Gi
+        # Min limits for containers.
+        min:
+          cpu: 10m
+          memory: 10Mi
+        # Default limits for containers.
+        default:
+          cpu: 500m
+          memory: 1Gi
+        # Default requests for containers.
+        defaultRequest:
+          cpu: 30m
+          memory: 200Mi
+    pod:
+      # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+      enabled: true
+      # -- values defines the concrete limit values.
+      values:
+        max:
+          cpu: "2"
+          memory: "1Gi"
+        min:
+          cpu: "200m"
+          memory: "6Mi"
+    pvc:
+      # -- enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true.
+      enabled: true
+      # -- values defines the concrete limit values.
+      values:
+        max:
+          storage: 10Gi
+        min:
+          storage: 1Gi
 
   # -- resourceQuota defines default resource quotas applied when enableResourceQuota is true.
   resourceQuota:
-    # -- Quotas for compute resources (requests.cpu, limits.memory, etc).
+    # -- whether to enable ResourceQuota by default.
+    enabled: false
+    # -- compute quotas (requests.cpu, limits.memory, etc).
     compute:
-      requests.cpu: "10"
-      requests.memory: 20Gi
-      limits.cpu: "20"
-      limits.memory: 40Gi
+      # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+      enabled: true
+      # -- name of the ResourceQuota for compute resources.
+      name: compute-resources
+      # -- values for compute resource quotas.
+      values:
+        requests.cpu: "10"
+        requests.memory: 20Gi
+        limits.cpu: "20"
+        limits.memory: 40Gi
     # -- Quotas for storage resources (requests.storage, pvc counts, etc).
     storage:
-      requests.storage: 100Gi
-      persistentvolumeclaims: "10"
-      ephemeral-storage: "50Gi"
+    # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+      enabled: true
+      # -- name of the ResourceQuota for storage resources.
+      name: storage-resources
+      # -- values for storage resource quotas.
+      values:
+        requests.storage: 100Gi
+        persistentvolumeclaims: "10"
+        ephemeral-storage: "50Gi"
     # -- Quotas for Kubernetes object counts (pods, services, secrets, etc).
     objects:
-      pods: "50"
-      services: "20"
-      secrets: "100"
-      configmaps: "100"
-      count/deployments.apps: "20"
-      count/statefulsets.apps: "10"
+      # -- enabled indicates if compute resource quotas are enabled. Only used if parent "resourceQuota" enabled is true.
+      enabled: true
+      # -- name of the ResourceQuota for compute resources.
+      name: objects-resources
+      # -- values for objects resource quotas.
+      values:
+        pods: "50"
+        services: "20"
+        secrets: "100"
+        configmaps: "100"
+        count/deployments.apps: "20"
+        count/statefulsets.apps: "10"
 
   # -- rbac defines default RBAC settings applied when enableRBAC is true.
   rbac:
-    # -- Settings for developer role bindings.
-    developers:
-      # -- Whether to create the developer RoleBinding.
-      enabled: true
-      # -- The ClusterRole to bind to the developer groups (e.g., 'edit').
-      clusterRole: edit
-      # -- List of LDAP groups to receive developer access.
-      groups: []
-    # -- Settings for admin role bindings.
-    admins:
-      # -- Whether to create the admin RoleBinding.
-      enabled: true
-      # -- The ClusterRole to bind to the admin groups (e.g., 'admin').
-      clusterRole: admin
-      # -- List of LDAP groups to receive admin access.
-      groups: []
+    # -- whether to enable RBAC by default.
+    enabled: false
+    # -- roleMappings of roles to OpenShift groups.
+    roleMappings:
+      - # -- name is the name of the RoleBinding to create.
+        name: developers
+        # -- clusterRole is the name of ClusterRole to bind to the role's groups.
+        clusterRole: edit
+        # -- groups is a list of OpenShift groups to bind to the role.
+        groups: []
 
 # -- namespaces defines an array of namespace definitions to be created.
 namespaces: []

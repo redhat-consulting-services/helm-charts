@@ -1,28 +1,36 @@
 {{- range $namespace := .Values.namespaces }}
-{{- /* 1. Start logic check */ -}}
-{{- if include "tenant-namespaces.isEnabled" (dict "context" $namespace "key" "enableLimitRange" "default" $.Values.defaults.enableLimitRange) }}
-{{- $limits := mergeOverwrite (deepCopy $.Values.defaults.limitRange) ($namespace.limitRange | default dict) }}
+{{- $limitRange := mergeOverwrite (deepCopy $.Values.defaults.limitRange) ($namespace.limitRange | default dict) }}
+{{- /* check if LimitRange is enabled */ -}}
+{{- if $limitRange.enabled | default false }}
 ---
 kind: LimitRange
 apiVersion: v1
 metadata:
-  name: default
+  name: {{ $limitRange.name | default "default" | quote }}
   namespace: {{ $namespace.name | quote }}
+  labels:
+    {{- include "tenant-namespaces.labels" . | nindent 4 }}
 spec:
   limits:
-    {{- if $limits.container }}
+    {{- with $limitRange.container }}
+    {{- if .enabled | default false }}
     - type: Container
-      {{- toYaml $limits.container | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
+    {{- with }}
+
     {{- if $limits.pod }}
+    {{- if .enabled | default false }}
     - type: Pod
-      {{- toYaml $limits.pod | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
-    {{- if $limits.pvc }}
+    {{- end }}
+
+    {{- with $limits.pvc }}
+    {{- if .enabled | default false }}
     - type: PersistentVolumeClaim
-      {{- toYaml $limits.pvc | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
-{{- /* Closes the 'if include' block */ -}}
+    {{- end }}
 {{- end }}
-{{- /* Closes the 'range' block */ -}}
 {{- end }}
