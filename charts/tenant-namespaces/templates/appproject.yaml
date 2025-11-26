@@ -1,0 +1,42 @@
+{{- with .Values.project }}
+{{- if .enabled | default false }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ .name | quote }}
+  namespace: {{ $.Values.argocdNamespace | quote }}
+spec:
+  {{- with .description }}
+  description: {{ . | quote }}
+  {{- end }}
+  {{- with .sourceRepos }}
+  sourceRepos:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .destinations }}
+  destinations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .clusterResourceWhitelist }}
+  clusterResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .clusterResourceBlacklist }}
+  clusterResourceBlacklist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceWhitelist }}
+  namespaceResourceWhitelist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceBlacklist }}
+  namespaceResourceBlacklist:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .roles }}
+  roles:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

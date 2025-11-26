@@ -1,0 +1,44 @@
+{{- range $namespace := .Values.namespaces }}
+{{- $resourceQuota := mergeOverwrite (deepCopy $.Values.defaults.resourceQuota) ($namespace.resourceQuota | default dict) }}
+{{- if $resourceQuota.enabled | default false }}
+{{- with $resourceQuota.compute }}
+{{- if .enabled | default false }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .name | default "compute-resources" | quote }}
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- .values | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $resourceQuota.storage }}
+{{- if .enabled | default false }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .name | default "storage-resources" | quote }}
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- .values | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $resourceQuota.objects }}
+{{- if .enabled | default false }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .name | default "objects-resources" | quote }}
+  namespace: {{ $namespace.name | quote }}
+spec:
+  hard:
+    {{- .values | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

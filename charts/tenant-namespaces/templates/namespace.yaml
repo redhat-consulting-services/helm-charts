@@ -1,0 +1,16 @@
+{{- range $namespace := .Values.namespaces }}
+{{- $mergedData := (mergeOverwrite (deepCopy $.Values.defaults.namespace) (deepCopy $namespace)) }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $mergedData.name | quote }}
+  {{- with (include "tenant-namespaces.custom-labels" $mergedData) }}
+  labels:
+    {{- . | nindent 4 }}
+  {{- end }}
+  {{- with (include "tenant-namespaces.custom-annotations" $mergedData) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+{{- end }}

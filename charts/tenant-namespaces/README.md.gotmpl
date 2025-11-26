@@ -1,0 +1,192 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Prerequisites
+
+* This chart expects that a clusterwide ArgoCD instance is already installed and configured in the cluster. 
+* It also expects that a dedicated developer ArgoCD instance is available for the tenant teams to use.
+* The chart has been developed with BANP & ANP (BaselineAdminNetworkPolicies & AdminNetworkPolicies) in mind, but can be used without it as well.
+
+## Defining Namespaces for a Tenant
+
+This section defines the array of namespaces to be provisioned for a single tenant. The settings will override the global defaults.
+
+```yaml
+---
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
+
+  limitRange:
+    enabled: true
+    name: default
+    container:
+      enabled: true
+      values:
+        max:
+          cpu: "4"
+          memory: 4Gi
+        min:
+          cpu: 10m
+          memory: 10Mi
+        default:
+          cpu: 500m
+          memory: 1Gi
+        defaultRequest:
+          cpu: 30m
+          memory: 200Mi
+    pod:
+      enabled: true
+      values:
+        max:
+          cpu: "2"
+          memory: "1Gi"
+        min:
+          cpu: "200m"
+          memory: "6Mi"
+    pvc:
+      enabled: true
+      values:
+        max:
+          storage: 10Gi
+        min:
+          storage: 1Gi
+
+  resourceQuota:
+    enabled: true
+    compute:
+      enabled: true
+      name: compute-resources
+      values:
+        requests.cpu: "10"
+        requests.memory: 20Gi
+        limits.cpu: "20"
+        limits.memory: 40Gi
+    storage:
+      enabled: true
+      name: storage-resources
+      values:
+        requests.storage: 100Gi
+        persistentvolumeclaims: "10"
+        ephemeral-storage: "50Gi"
+    objects:
+      enabled: true
+      name: objects-resources
+      values:
+        pods: "50"
+        services: "20"
+        secrets: "100"
+        configmaps: "100"
+        count/deployments.apps: "20"
+        count/statefulsets.apps: "10"
+
+  rbac:
+    enabled: true
+    roleBindings:
+      - name: developers
+        clusterRole: edit
+        groups: []
+
+project:
+  name: "my-app-project"
+  namespace: ""
+  enabled: true
+  description: ""
+  sourceRepos:
+    - https://github.com/example/repo.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: example-role
+      groups:
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
+
+namespaces:
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
+```
+
+## Minimal configuration
+
+```yaml
+defaults:
+  namespace:
+    labels:
+      ns.openshift.io/owner: "tenant-team"
+    features:
+      enableNetpolAuditLogging: true
+      enableUserMonitoring: true
+      enableCertificateConfigMap: true
+
+project:
+  name: "my-app-project"
+  namespace: ""
+  enabled: true
+  description: ""
+  sourceRepos:
+    - https://github.com/example/repo.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: example-role
+      groups:
+        - developer
+      policies:
+        - p, proj:my-app-project:developer, applications, *, my-app-project/*, allow
+        - p, proj:my-app-project:developer, repositories, get, my-app-project/*, allow
+        - p, proj:my-app-project:developer, clusters, get, *, allow
+        - p, proj:my-app-project:developer, projects, get, my-app-project, allow
+
+namespaces:
+  - name: abc
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: test
+        stringData:
+          key: value
+```
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
