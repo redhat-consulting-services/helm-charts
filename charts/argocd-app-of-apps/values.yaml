@@ -115,8 +115,8 @@ default:
       #     kind: '*'
 
 # -- Define a map of projects and their configurations
-projects:
-  # project1:
+projects: {}
+  # example:
   #   # projects.<project-name>.namespace -- namespace is the namespace for the project
   #   namespace: "openshift-gitops"
   #
