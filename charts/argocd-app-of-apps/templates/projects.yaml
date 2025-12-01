@@ -1,52 +1,58 @@
 {{- range $key,$val := .Values.projects }}
+{{- $mergedValue := (mergeOverwrite (deepCopy $.Values.default.project) (deepCopy $val)) }}
+{{- if $mergedValue.enabled | default false }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ $key }}
-  namespace: {{ $val.namespace | quote }}
-  {{- with $val.annotations }}
+  namespace: {{ $mergedValue.namespace | quote }}
+  {{- with $mergedValue.annotations }}
   annotations:
-    {{ toYaml . | nindent 4 }}
+    {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with $val.labels }}
+  {{- with $mergedValue.labels }}
   labels:
-    {{ toYaml . | nindent 4 }}
+    {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with $val.finalizers }}
+  {{- with $mergedValue.finalizers }}
   finalizers:
-    {{ toYaml . | nindent 4 }}
+    {{- . | toYaml | nindent 4 }}
   {{- end }}
 spec:
-  {{- with $val.description }}
+  {{- with $mergedValue.description }}
   description: {{ . | quote }}
   {{- end }}
-  {{- with $val.sourceRepos }}
+  {{- with $mergedValue.sourceRepos }}
   sourceRepos:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.destinations }}
+  {{- with $mergedValue.destinations }}
   destinations:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.clusterResourceWhitelist }}
+  {{- with $mergedValue.clusterResourceWhitelist }}
   clusterResourceWhitelist:
     {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.clusterResourceBlacklist }}
+  {{- with $mergedValue.clusterResourceBlacklist }}
   clusterResourceBlacklist:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.namespaceResourceWhitelist }}
+  {{- with $mergedValue.namespaceResourceWhitelist }}
   namespaceResourceWhitelist:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.namespaceResourceBlacklist }}
+  {{- with $mergedValue.namespaceResourceBlacklist }}
   namespaceResourceBlacklist:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $val.roles }}
+  {{- with $mergedValue.roles }}
   roles:
-    {{ toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with $mergedValue.extraFields }}
+  {{- . | toYaml | nindent 2 }}
+  {{- end }}
+{{- end }}
 {{- end }}
