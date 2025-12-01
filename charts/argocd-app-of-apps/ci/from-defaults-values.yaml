@@ -13,21 +13,18 @@ default:
       repoURL: https://github.com/my-org/my-repo
       targetRevision: main
 
-projects:
-  example:
+  project:
+    enabled: true
     annotations:
       argocd.argoproj.io/sync-wave: "-2"
-    description: Project for cluster cp1-hub
-    namespace: openshift-gitops
-    sourceRepos:
-      - https://gitlab.example.com/infra/cluster-config.git
-    destinations:
-      - namespace: '*'
-        server: https://kubernetes.default.svc
-    extraFields: |
+    extraFields:
       clusterResourceWhitelist:
       - group: '*'
         kind: '*'
+
+projects:
+  example:
+    description: Project for cluster cp1-hub
 
 applications:
   disco-operators:

@@ -1,5 +1,6 @@
 {{- range $key,$val := .Values.applications }}
-{{- if hasKey $val "enabled" | required (printf "An enabled key for application %s is required" $key) }}
+{{- $mergedValue := (mergeOverwrite (deepCopy $.Values.default.application) (deepCopy $val)) }}
+{{- if $mergedValue.enabled | default false }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -16,68 +17,57 @@ metadata:
   name: {{ printf "%s-%s" $key $.Values.appSuffix | quote }}
   {{- end }}
   {{- end }}
-  namespace: {{ $val.namespace | default $.Values.default.application.namespace }}
+  namespace: {{ $mergedValue.namespace }}
 
-  {{- with (merge ($val.labels | default (dict)) ($.Values.default.labels | default (dict))) }}
+  {{- with ($mergedValue.labels | default (dict)) }}
   labels:
-    {{- (merge ($val.labels | default (dict)) ($.Values.default.labels | default (dict))) | toYaml | nindent 4 }}
+    {{- . | toYaml | nindent 4 }}
   {{- end }}
 
-  {{- with (merge ($val.annotations | default (dict)) ($.Values.default.annotations | default (dict))) }}
+  {{- with ($mergedValue.annotations | default (dict)) }}
   annotations:
     {{- . | toYaml | nindent 4 }}
   {{- end }}
 
-  {{- with (concat ($val.finalizers | default (list)) ($.Values.default.finalizers | default (list))) }}
+  {{- with ($mergedValue.finalizers | default (list)) }}
   finalizers:
     {{- . | toYaml | nindent 4 }}
   {{- end }}
 spec:
   destination:
-    {{- $val.destination | default $.Values.default.application.destination | toYaml | nindent 4 }}
-  project: {{ $val.project | default $.Values.default.application.project | required (printf "No project specified for %s" $key ) }}
+    {{- $mergedValue.destination | toYaml | nindent 4 }}
+  project: {{ $mergedValue.project | required (printf "No project specified for %s" $key ) }}
 
-  {{- if or ($val.syncPolicy | default dict) ($.Values.default.application.syncPolicy | default dict) }}
+  {{- with $mergedValue.syncPolicy }}
   syncPolicy:
-    {{- if and $val.syncPolicy $val.syncPolicy.automated }}
+    {{- with .automated }}
     automated:
-      {{- $val.syncPolicy.automated | toYaml | nindent 6 }}
-    {{- else if and $.Values.default.application.syncPolicy ($.Values.default.application.syncPolicy.automated | default dict) }}
-    automated:
-      {{- $.Values.default.application.syncPolicy.automated | toYaml | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
-
-    {{- if and $val.syncPolicy $val.syncPolicy.retry }}
+    {{- with .retry }}
     retry:
-      {{- $val.syncPolicy.retry | toYaml | nindent 6 }}
-    {{- else if and $.Values.default.application.syncPolicy ($.Values.default.application.syncPolicy.retry | default dict) }}
-    retry:
-      {{- $.Values.default.application.syncPolicy.retry | toYaml | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
-
-    {{- if and $val.syncPolicy $val.syncPolicy.syncOptions }}
+    {{- with .syncOptions }}
     syncOptions:
-      {{- $val.syncPolicy.syncOptions | toYaml | nindent 6 }}
-    {{- else if and $.Values.default.application.syncPolicy ($.Values.default.application.syncPolicy.syncOptions | default dict) }}
-    syncOptions:
-      {{- $.Values.default.application.syncPolicy.syncOptions | toYaml | nindent 6 }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
   {{- end }}
 
   {{- if not (gt (len ($val.sources | default dict)) 0) }}
-  {{- with $val.source }}
+  {{- with $mergedValue.source }}
   source:
     {{- if or (not $.Values.appSourceBasePath) (.ignoreBasePath | default false) }}
     path: {{ .path | quote }}
     {{- else }}
     path: {{ printf "%s/%s" (trimSuffix "/" $.Values.appSourceBasePath) (trimPrefix "/" .path) | quote }}
     {{- end }}
-    repoURL: {{ .repoURL | default $.Values.default.application.source.repoURL | required (printf "No source.repoURL specified for %s" $key ) }}
+    repoURL: {{ .repoURL | required (printf "No source.repoURL specified for %s" $key ) }}
     targetRevision: {{ .targetRevision | default $.Values.default.application.source.targetRevision | required (printf "No source.targetRevision specified for %s" $key ) }}
   {{- end }}
   {{- end }}
 
-  {{- with $val.sources }}
+  {{- with $mergedValue.sources }}
   sources:
   {{- range $source := . }}
     - repoURL: {{ .repoURL | required (printf "No sources.repoURL specified for repoURL") }}
@@ -97,7 +87,7 @@ spec:
   {{- end }} {{/* end for range */}}
   {{- end }} {{/* end for with $val.sources */}}
 
-  {{- with $val.extraFields }}
+  {{- with $mergedValue.extraFields }}
   {{- . | toYaml | nindent 2 }}
   {{- end }}
 {{- end }}

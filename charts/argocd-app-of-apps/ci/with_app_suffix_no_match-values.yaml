@@ -1,7 +1,7 @@
 appSuffix: abc
 
 default:
-  app:
+  application:
     annotations:
       argocd.argoproj.io/compare-options: IgnoreExtraneous
     enabled: true

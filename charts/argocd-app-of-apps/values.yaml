@@ -63,9 +63,60 @@ default:
       #   valueFiles:
       #     - $myRepo/values.yaml
 
+  # default.project -- Define default configurations for all projects
+  project:
+    # default.project.enabled -- enable or disable projects by default
+    enabled: false
+    # default.project.namespace -- namespace is the namespace for the project
+    namespace: "openshift-gitops"
+    # default.project.annotations -- annotations is a map of annotations for the project
+    annotations: {}
+    # default.project.labels -- labels is a map of labels for the project
+    labels: {}
+    # default.project.finalizers -- finalizers is a list of finalizers for the project
+    finalizers: []
+    # default.project.description -- description is the description of the project
+    description: ""
+    # default.project.sourceRepos -- sourceRepos is a list of source repositories for the project
+    sourceRepos:
+      - '*'
+    # default.project.destinations -- destinations is a list of destinations for the project
+    destinations:
+      - namespace: '*'
+        server: https://kubernetes.default.svc
+    # default.project.clusterResourceWhitelist -- clusterResourceWhitelist is a list of cluster resources to whitelist
+    clusterResourceWhitelist: []
+      # - group: ''
+      #   kind: Namespace
+    # default.project.clusterResourceWhitelist -- clusterResourceWhitelist is a list of cluster resources to whitelist
+    clusterResourceBlacklist: []
+      # - group: ''
+      #   kind: Namespace
+    # default.project.namespaceResourceWhitelist -- namespaceResourceWhitelist is a list of namespace resources to whitelist
+    namespaceResourceWhitelist: []
+      # - group: 'apps'
+      #   kind: Deployment
+    # default.project.namespaceResourceBlacklist -- namespaceResourceBlacklist is a list of namespace resources to blacklist
+    namespaceResourceBlacklist: []
+      # - group: ''
+      #   kind: ResourceQuota
+    # default.project.extraFields -- roles is a list of roles for the project
+    roles: []
+      # - name: read-only
+      #   description: Read-only privileges to my-project
+      #   policies:
+      #   - p, proj:my-project:read-only, applications, get, my-project/*, allow
+      #   groups:
+      #   - my-oidc-group
+    # default.project.extraFields -- extraFields allows for adding additional fields to the project, that are not mapped
+    extraFields: {}
+      # clusterResourceWhitelist:
+      #   - group: '*'
+      #     kind: '*'
+
 # -- Define a map of projects and their configurations
-projects:
-  # project1:
+projects: {}
+  # example:
   #   # projects.<project-name>.namespace -- namespace is the namespace for the project
   #   namespace: "openshift-gitops"
   #

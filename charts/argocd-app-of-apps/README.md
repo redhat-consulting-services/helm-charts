@@ -1,6 +1,6 @@
 # argocd-app-of-apps
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square)
+![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.0](https://img.shields.io/badge/AppVersion-1.3.0-informational?style=flat-square)
 
 A Helm chart for ArgoCD to manage the App of Apps pattern
 
@@ -41,11 +41,24 @@ A Helm chart for ArgoCD to manage the App of Apps pattern
 | applications.example.syncPolicy.automated.selfHeal | bool | `true` | selfHeal is a flag to enable or disable self-healing |
 | applications.example.syncPolicy.retry | object | `{}` | retry is the retry strategy for the application |
 | applications.example.syncPolicy.syncOptions | list | `[]` | syncOptions is a list of sync options |
-| default | object | `{"application":{"annotations":{},"destination":{"namespace":"openshift-gitops","server":"https://kubernetes.default.svc"},"enabled":false,"finalizers":[],"labels":{},"namespace":"openshift-gitops","project":"default","source":{"helm":{},"ignoreBasePath":false,"path":"","repoURL":"https://github.com/my-org/my-repo","targetRevision":"master"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"retry":{},"syncOptions":[]}}}` | Default values for all applications |
+| default | object | `{"application":{"annotations":{},"destination":{"namespace":"openshift-gitops","server":"https://kubernetes.default.svc"},"enabled":false,"finalizers":[],"labels":{},"namespace":"openshift-gitops","project":"default","source":{"helm":{},"ignoreBasePath":false,"path":"","repoURL":"https://github.com/my-org/my-repo","targetRevision":"master"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"retry":{},"syncOptions":[]}},"project":{"annotations":{},"clusterResourceBlacklist":[],"clusterResourceWhitelist":[],"description":"","destinations":[{"namespace":"*","server":"https://kubernetes.default.svc"}],"enabled":false,"extraFields":{},"finalizers":[],"labels":{},"namespace":"openshift-gitops","namespaceResourceBlacklist":[],"namespaceResourceWhitelist":[],"roles":[],"sourceRepos":["*"]}}` | Default values for all applications |
 | default.application | object | `{"annotations":{},"destination":{"namespace":"openshift-gitops","server":"https://kubernetes.default.svc"},"enabled":false,"finalizers":[],"labels":{},"namespace":"openshift-gitops","project":"default","source":{"helm":{},"ignoreBasePath":false,"path":"","repoURL":"https://github.com/my-org/my-repo","targetRevision":"master"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"retry":{},"syncOptions":[]}}` | We expect the same structure as for the applications below |
+| default.project | object | `{"annotations":{},"clusterResourceBlacklist":[],"clusterResourceWhitelist":[],"description":"","destinations":[{"namespace":"*","server":"https://kubernetes.default.svc"}],"enabled":false,"extraFields":{},"finalizers":[],"labels":{},"namespace":"openshift-gitops","namespaceResourceBlacklist":[],"namespaceResourceWhitelist":[],"roles":[],"sourceRepos":["*"]}` | Define default configurations for all projects |
+| default.project.annotations | object | `{}` | annotations is a map of annotations for the project |
+| default.project.clusterResourceWhitelist | list | `[]` | clusterResourceWhitelist is a list of cluster resources to whitelist |
+| default.project.description | string | `""` | description is the description of the project |
+| default.project.destinations | list | `[{"namespace":"*","server":"https://kubernetes.default.svc"}]` | destinations is a list of destinations for the project |
+| default.project.enabled | bool | `false` | enable or disable projects by default |
+| default.project.extraFields | object | `{}` | extraFields allows for adding additional fields to the project, that are not mapped |
+| default.project.finalizers | list | `[]` | finalizers is a list of finalizers for the project |
+| default.project.labels | object | `{}` | labels is a map of labels for the project |
+| default.project.namespace | string | `"openshift-gitops"` | namespace is the namespace for the project |
+| default.project.namespaceResourceBlacklist | list | `[]` | namespaceResourceBlacklist is a list of namespace resources to blacklist |
+| default.project.namespaceResourceWhitelist | list | `[]` | namespaceResourceWhitelist is a list of namespace resources to whitelist |
+| default.project.sourceRepos | list | `["*"]` | sourceRepos is a list of source repositories for the project |
 | fullnameOverride | string | `""` |  |
 | nameOverride | string | `""` |  |
-| projects | object | `{"project1":{"annotations":{},"clusterResourceBlacklist":[],"clusterResourceWhitelist":[],"description":"","destinations":[{"namespace":"*","server":"https://kubernetes.default.svc"}],"extraFields":{},"finalizers":[],"labels":{},"namespace":"openshift-gitops","namespaceResourceBlacklist":[],"namespaceResourceWhitelist":[],"roles":[],"sourceRepos":["*"]}}` | Define a map of projects and their configurations |
+| projects | object | `{"example":{"annotations":{},"clusterResourceBlacklist":[],"clusterResourceWhitelist":[],"description":"","destinations":[{"namespace":"*","server":"https://kubernetes.default.svc"}],"extraFields":{},"finalizers":[],"labels":{},"namespace":"openshift-gitops","namespaceResourceBlacklist":[],"namespaceResourceWhitelist":[],"roles":[],"sourceRepos":["*"]}}` | Define a map of projects and their configurations |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
