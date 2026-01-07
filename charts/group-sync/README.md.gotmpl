@@ -1,0 +1,94 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Prerequisites
+
+An LDAP server reachable from the OpenShift cluster 
+
+The oc CLI tool available within the sync pod image (standard in ose-cli).
+
+## Example
+
+```yaml
+namespace: ldap-group-sync
+
+secretStrategy: "provided"
+
+image:
+  repository: registry.redhat.io/openshift4/ose-cli
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+ldap:
+  url: "ldaps://ldap-service.ldap-group-sync.svc.cluster.local:636"
+  baseDN: "dc=example,dc=com"
+  bindDN: "cn=admin,dc=example,dc=com"
+
+  secretName: "ldap-secret"
+
+  insecure: false
+
+  caCert: |-
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+
+whitelist: |
+  cn=lab-admins,ou=groups,dc=example,dc=com
+  cn=lab-readers,ou=groups,dc=example,dc=com
+
+syncSettings:
+  groupsQuery:
+    filter: "(objectclass=groupOfNames)"
+    scope: "sub"
+    derefAliases: "never"
+  usersQuery:
+    derefAliases: "never"
+  groupUIDAttribute: "dn"
+  groupNameAttributes: [ "cn" ]
+  groupMembershipAttributes: [ "member" ]
+  userNameAttributes: [ "cn" ]
+  userUIDAttribute: "dn"
+  tolerateMemberNotFound: true
+  tolerateMemberOutOfScope: true
+
+cronjob:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  backoffLimit: 0
+  activeDeadlineSeconds: 500
+  ttlSecondsAfterFinished: 1800
+```
+
+## Minimal Configuration
+
+```yaml
+ldap:
+  url: "ldap://10.0.2.2:389"
+  baseDN: "dc=example,dc=com"
+  bindDN: "cn=admin,dc=example,dc=com"
+  secretName: "ldap-secret"
+
+syncSettings:
+  groupsQuery:
+    derefAliases: "never"
+  usersQuery:
+    derefAliases: "never"
+```
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
