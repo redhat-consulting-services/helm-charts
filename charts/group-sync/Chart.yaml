@@ -1,6 +1,6 @@
 apiVersion: v2
 name: group-sync
-description: A Helm chart for Kubernetes
+description: A Helm chart for doing Group Synchronization in OpenShift
 
 type: application
 
