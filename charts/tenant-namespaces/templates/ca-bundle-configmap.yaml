@@ -1,5 +1,6 @@
 {{- range $namespace := .Values.namespaces }}
-{{- if ($namespace.namespace.features.enableCertificateConfigMap | default $.Values.defaults.namespace.features.enableCertificateConfigMap | default false) }}
+{{- $nsConfig := mergeOverwrite (deepCopy $.Values.defaults.namespace) ($namespace.namespace | default dict) }}
+{{- if $nsConfig.features.enableCertificateConfigMap }}
 ---
 apiVersion: v1
 kind: ConfigMap

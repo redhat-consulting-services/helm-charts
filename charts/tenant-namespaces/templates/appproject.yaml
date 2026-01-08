@@ -5,7 +5,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ .name | quote }}
-  namespace: {{ $.Values.argocdNamespace | quote }}
+  namespace: {{ .namespace | quote }}
 spec:
   {{- with .description }}
   description: {{ . | quote }}
