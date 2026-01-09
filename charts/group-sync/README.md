@@ -1,20 +1,18 @@
 # group-sync
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+A Helm chart for doing Group Synchronization in OpenShift
 
 ## Prerequisites
 
 An LDAP server reachable from the OpenShift cluster
 
-The oc CLI tool available within the sync pod image (standard in ose-cli).
+Access to a oc CLI container e.g. ose-cli
 
 ## Example
 
 ```yaml
-namespace: ldap-group-sync
-
 secretStrategy: "provided"
 
 image:
@@ -97,7 +95,8 @@ syncSettings:
 | ldap.insecure | bool | `false` | Allow insecure LDAP connections (set to true for ldap:// without TLS) |
 | ldap.secretName | string | `"ldap-secret"` | Name of the Kubernetes secret containing the 'bindPassword' key |
 | ldap.url | string | `"ldaps://ldap-service.ldap-group-sync.svc.cluster.local:636"` | LDAP server URL (ldap:// or ldaps://) |
-| namespace | string | `"ldap-group-sync"` | Namespace where the LDAP group sync resources will be deployed |
+| sealedSecret | object | `{"bindPassword":null}` | Sealed secret configuration (used when secretStrategy is "sealedSecret") |
+| sealedSecret.bindPassword | string | `nil` | Encrypted bind password for the SealedSecret |
 | secretStrategy | string | `"provided"` | Secret strategy for managing the LDAP bind password. Options: "provided" (manual secret creation), "externalSecret" (ExternalSecrets operator), "sealedSecret" (Bitnami SealedSecrets) |
 | syncSettings.groupMembershipAttributes | list | `["member"]` | LDAP attributes that define group membership |
 | syncSettings.groupNameAttributes | list | `["cn"]` | LDAP attributes to use for the group name in OpenShift |

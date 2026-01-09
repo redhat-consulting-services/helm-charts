@@ -10,13 +10,11 @@
 
 An LDAP server reachable from the OpenShift cluster 
 
-The oc CLI tool available within the sync pod image (standard in ose-cli).
+Access to a oc CLI container e.g. ose-cli
 
 ## Example
 
 ```yaml
-namespace: ldap-group-sync
-
 secretStrategy: "provided"
 
 image:

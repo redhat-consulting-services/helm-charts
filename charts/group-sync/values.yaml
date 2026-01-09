@@ -1,8 +1,10 @@
-# -- Namespace where the LDAP group sync resources will be deployed
-namespace: ldap-group-sync
-
+---
 # -- Secret strategy for managing the LDAP bind password. Options: "provided" (manual secret creation), "externalSecret" (ExternalSecrets operator), "sealedSecret" (Bitnami SealedSecrets)
 secretStrategy: "provided"
+# -- Sealed secret configuration (used when secretStrategy is "sealedSecret")
+sealedSecret:
+  # -- Encrypted bind password for the SealedSecret
+  bindPassword:
 
 # Container image settings
 image:
