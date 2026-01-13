@@ -1,0 +1,28 @@
+project:
+  name: "example-project"
+  enabled: true
+  sourceRepos:
+    - "*"
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: example-namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: example-role
+      groups:
+        - "example-group"
+      policies:
+        - p, proj:example-project:example-role, applications, get, example-namespace/*, allow
+
+namespaces:
+  - name: example-namespace
+    extraResources:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: test
+          namespace: example-namespace
+        stringData:
+          key: value
