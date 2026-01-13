@@ -1,6 +1,6 @@
 # tenant-namespaces
 
-![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square)
 
 A multi-tenant onboarding chart that automates namespace creation, resource governance, and Argo CD project delegation for development teams
 
@@ -24,6 +24,7 @@ defaults:
       enableNetpolAuditLogging: true
       enableUserMonitoring: true
       enableCertificateConfigMap: true
+      enableArgocdRBAC: true
 
   limitRange:
     enabled: true
@@ -181,6 +182,9 @@ namespaces:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| argoCD | object | `{"name":"openshift-gitops","namespace":"openshift-gitops"}` | argoCD is the configuration for the Developer Argo CD instance. |
+| argoCD.name | string | `"openshift-gitops"` | name is the name of the Developer Argo CD instance. |
+| argoCD.namespace | string | `"openshift-gitops"` | namespace is the namespace where the Developer Argo CD instance resides. |
 | defaults.limitRange | object | `{"container":{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}},"enabled":false,"name":"default","pod":{"enabled":true,"values":{"max":{"cpu":"2","memory":"1Gi"},"min":{"cpu":"200m","memory":"6Mi"}}},"pvc":{"enabled":true,"values":{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}}}` | limitRange defines default limits applied when enableLimitRange is true. |
 | defaults.limitRange.container | object | `{"enabled":true,"values":{"default":{"cpu":"500m","memory":"1Gi"},"defaultRequest":{"cpu":"30m","memory":"200Mi"},"max":{"cpu":"4","memory":"4Gi"},"min":{"cpu":"10m","memory":"10Mi"}}}` | Configuration for container-level limits (max, min, default, defaultRequest). |
 | defaults.limitRange.container.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
@@ -195,7 +199,8 @@ namespaces:
 | defaults.limitRange.pvc.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
 | defaults.limitRange.pvc.values | object | `{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}` | values defines the concrete limit values. |
 | defaults.namespace.annotations | object | `{}` | Annotations applied to all Namespaces being provisioned. |
-| defaults.namespace.features | object | `{"enableCertificateConfigMap":true,"enableNetpolAuditLogging":true,"enableUserMonitoring":true}` | features contains feature flags applied to all namespaces unless overridden. |
+| defaults.namespace.features | object | `{"enableArgocdRBAC":true,"enableCertificateConfigMap":true,"enableNetpolAuditLogging":true,"enableUserMonitoring":true}` | features contains feature flags applied to all namespaces unless overridden. |
+| defaults.namespace.features.enableArgocdRBAC | bool | `true` | enableArgocdRBAC enables ArgoCD RBAC RoleBinding creation for the namespace. When disabled, ArgoCD's application and applicationset controllers will not have access to the namespace, unless manually granted. |
 | defaults.namespace.features.enableCertificateConfigMap | bool | `true` | enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace. |
 | defaults.namespace.features.enableNetpolAuditLogging | bool | `true` | enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. |
 | defaults.namespace.features.enableUserMonitoring | bool | `true` | enableUserMonitoring enables user-defined Prometheus monitoring for applications. |

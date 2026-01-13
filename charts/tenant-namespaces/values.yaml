@@ -1,3 +1,10 @@
+# -- argoCD is the configuration for the Developer Argo CD instance.
+argoCD:
+  # -- name is the name of the Developer Argo CD instance.
+  name: openshift-gitops
+  # -- namespace is the namespace where the Developer Argo CD instance resides.
+  namespace: openshift-gitops
+
 # @default -- defaults contains global settings and feature flags applied to all namespaces unless overridden.
 defaults:
   namespace:
@@ -13,6 +20,9 @@ defaults:
       enableUserMonitoring: true
       # -- enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace.
       enableCertificateConfigMap: true
+      # -- enableArgocdRBAC enables ArgoCD RBAC RoleBinding creation for the namespace.
+      # When disabled, ArgoCD's application and applicationset controllers will not have access to the namespace, unless manually granted.
+      enableArgocdRBAC: true
 
   # -- limitRange defines default limits applied when enableLimitRange is true.
   limitRange:
@@ -179,6 +189,9 @@ namespaces: []
 #       enableUserMonitoring: true
 #       # -- enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace.
 #       enableCertificateConfigMap: false
+#       # -- enableArgocdRBAC enables ArgoCD RBAC RoleBinding creation for the namespace.
+#       # When disabled, ArgoCD's application and applicationset controllers will not have access to the namespace, unless manually granted.
+#       enableArgocdRBAC: true
 #   # -- limitRange defines default limits applied when enableLimitRange is true.
 #   limitRange:
 #     # -- whether to enable LimitRange by default.
