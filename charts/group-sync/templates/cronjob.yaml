@@ -23,17 +23,21 @@ spec:
             volumeMounts:
             - name: config-volume
               mountPath: /etc/config
+            {{- if .Values.ldap.caCert }}
             - name: ldap-ca
               mountPath: /etc/ldap-ca
+            {{- end }}
             - name: ldap-secret
               mountPath: /etc/secrets
           volumes:
           - name: config-volume
             configMap:
               name: ldap-sync-config
+          {{- if .Values.ldap.caCert }}
           - name: ldap-ca
             configMap:
               name: ldap-sync-ca
+          {{- end }}
           - name: ldap-secret
             secret:
               secretName: {{ .Values.ldap.secretName }}

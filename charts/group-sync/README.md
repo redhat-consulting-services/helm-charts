@@ -13,8 +13,6 @@ Access to a oc CLI container e.g. ose-cli
 ## Example
 
 ```yaml
-secretStrategy: "provided"
-
 image:
   repository: registry.redhat.io/openshift4/ose-cli
   tag: "latest"
@@ -59,6 +57,24 @@ cronjob:
   backoffLimit: 0
   activeDeadlineSeconds: 500
   ttlSecondsAfterFinished: 1800
+
+extraResources:
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: ldap-creds
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        name: vault-backend
+        kind: ClusterSecretStore
+      target:
+        name: ldap-creds
+      data:
+        - secretKey: bindPassword
+          remoteRef:
+            key: secret/ldap
+            property: password
 ```
 
 ## Minimal Configuration
@@ -86,6 +102,16 @@ syncSettings:
 | cronjob.concurrencyPolicy | string | `"Forbid"` | Concurrency policy for the CronJob (Allow, Forbid, or Replace) |
 | cronjob.schedule | string | `"*/30 * * * *"` | Cron schedule for automatic LDAP group synchronization (in cron format) |
 | cronjob.ttlSecondsAfterFinished | int | `1800` | Time in seconds to keep finished job pods before cleanup |
+| extraResources[0].apiVersion | string | `"external-secrets.io/v1"` |  |
+| extraResources[0].kind | string | `"ExternalSecret"` |  |
+| extraResources[0].metadata.name | string | `"ldap-creds"` |  |
+| extraResources[0].spec.data[0].remoteRef.key | string | `"secret/ldap"` |  |
+| extraResources[0].spec.data[0].remoteRef.property | string | `"password"` |  |
+| extraResources[0].spec.data[0].secretKey | string | `"bindPassword"` |  |
+| extraResources[0].spec.refreshInterval | string | `"1h"` |  |
+| extraResources[0].spec.secretStoreRef.kind | string | `"ClusterSecretStore"` |  |
+| extraResources[0].spec.secretStoreRef.name | string | `"vault-backend"` |  |
+| extraResources[0].spec.target.name | string | `"ldap-creds"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"registry.redhat.io/openshift4/ose-cli"` | Container image repository for the OpenShift CLI |
 | image.tag | string | `"latest"` | Container image tag |
@@ -95,9 +121,6 @@ syncSettings:
 | ldap.insecure | bool | `false` | Allow insecure LDAP connections (set to true for ldap:// without TLS) |
 | ldap.secretName | string | `"ldap-secret"` | Name of the Kubernetes secret containing the 'bindPassword' key |
 | ldap.url | string | `"ldaps://ldap-service.ldap-group-sync.svc.cluster.local:636"` | LDAP server URL (ldap:// or ldaps://) |
-| sealedSecret | object | `{"bindPassword":null}` | Sealed secret configuration (used when secretStrategy is "sealedSecret") |
-| sealedSecret.bindPassword | string | `nil` | Encrypted bind password for the SealedSecret |
-| secretStrategy | string | `"provided"` | Secret strategy for managing the LDAP bind password. Options: "provided" (manual secret creation), "externalSecret" (ExternalSecrets operator), "sealedSecret" (Bitnami SealedSecrets) |
 | syncSettings.groupMembershipAttributes | list | `["member"]` | LDAP attributes that define group membership |
 | syncSettings.groupNameAttributes | list | `["cn"]` | LDAP attributes to use for the group name in OpenShift |
 | syncSettings.groupUIDAttribute | string | `"dn"` | LDAP attribute to use as the group's unique identifier |

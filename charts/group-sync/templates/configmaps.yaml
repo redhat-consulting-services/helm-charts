@@ -1,3 +1,4 @@
+{{- if .Values.ldap.caCert }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   ca.crt: {{ .Values.ldap.caCert | nindent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap

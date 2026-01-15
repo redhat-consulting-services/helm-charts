@@ -1,11 +1,4 @@
 ---
-# -- Secret strategy for managing the LDAP bind password. Options: "provided" (manual secret creation), "externalSecret" (ExternalSecrets operator), "sealedSecret" (Bitnami SealedSecrets)
-secretStrategy: "provided"
-# -- Sealed secret configuration (used when secretStrategy is "sealedSecret")
-sealedSecret:
-  # -- Encrypted bind password for the SealedSecret
-  bindPassword:
-
 # Container image settings
 image:
   # -- Container image repository for the OpenShift CLI
@@ -79,3 +72,22 @@ cronjob:
   activeDeadlineSeconds: 500
   # -- Time in seconds to keep finished job pods before cleanup
   ttlSecondsAfterFinished: 1800
+
+# Additional resources to create, e.g. the LDAP secret
+extraResources:
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: ldap-creds
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        name: vault-backend
+        kind: ClusterSecretStore
+      target:
+        name: ldap-creds
+      data:
+        - secretKey: bindPassword
+          remoteRef:
+            key: secret/ldap
+            property: password
