@@ -1,0 +1,8 @@
+{{- range .Values.extraResources }}
+---
+{{- $resource := . }}
+{{- if not .metadata.namespace }}
+{{- $_ := set $resource.metadata "namespace" $.Release.Namespace }}
+{{- end }}
+{{ toYaml $resource }}
+{{- end }}

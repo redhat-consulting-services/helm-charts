@@ -1,0 +1,43 @@
+{{- if .Values.ldap.caCert }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-sync-ca
+  namespace: {{ .Release.Namespace }}
+data:
+  ca.crt: {{ .Values.ldap.caCert | nindent 4 }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-sync-config
+  namespace: {{ .Release.Namespace }}
+data:
+  whitelist.txt: |
+{{ .Values.whitelist | indent 4 }}
+  sync.yaml: |
+    kind: LDAPSyncConfig
+    apiVersion: v1
+    url: {{ .Values.ldap.url }}
+    bindDN: {{ .Values.ldap.bindDN | quote }}
+    bindPassword:
+      file: "/etc/secrets/bindPassword"
+    insecure: {{ .Values.ldap.insecure }}
+    rfc2307:
+      groupsQuery:
+        baseDN: {{ .Values.ldap.baseDN | quote }}
+        scope: {{ .Values.syncSettings.groupsQuery.scope | quote }}
+        derefAliases: {{ .Values.syncSettings.groupsQuery.derefAliases | quote }}
+        filter: {{ .Values.syncSettings.groupsQuery.filter | quote }}
+      groupUIDAttribute: {{ .Values.syncSettings.groupUIDAttribute | quote }}
+      groupNameAttributes: {{ .Values.syncSettings.groupNameAttributes }}
+      groupMembershipAttributes: {{ .Values.syncSettings.groupMembershipAttributes }}
+      usersQuery:
+        baseDN: {{ .Values.ldap.baseDN | quote }}
+        derefAliases: {{ .Values.syncSettings.usersQuery.derefAliases | quote }}
+        scope: "sub"
+      userUIDAttribute: {{ .Values.syncSettings.userUIDAttribute | quote }}
+      userNameAttributes: {{ .Values.syncSettings.userNameAttributes }}
+      tolerateMemberNotFoundErrors: {{ .Values.syncSettings.tolerateMemberNotFound }}
+      tolerateMemberOutOfScopeErrors: {{ .Values.syncSettings.tolerateMemberOutOfScope }}

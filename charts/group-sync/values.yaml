@@ -1,0 +1,93 @@
+---
+# Container image settings
+image:
+  # -- Container image repository for the OpenShift CLI
+  repository: registry.redhat.io/openshift4/ose-cli
+  # -- Container image tag
+  tag: "latest"
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# LDAP connection settings
+ldap:
+  # -- LDAP server URL (ldap:// or ldaps://)
+  url: "ldaps://ldap-service.ldap-group-sync.svc.cluster.local:636"
+  # -- LDAP base DN for searches
+  baseDN: "dc=example,dc=com"
+  # -- LDAP bind DN for authentication
+  bindDN: "cn=admin,dc=example,dc=com"
+  # -- Name of the Kubernetes secret containing the 'bindPassword' key
+  secretName: "ldap-secret"
+  # -- Allow insecure LDAP connections (set to true for ldap:// without TLS)
+  insecure: false
+  # -- CA certificate for LDAPS connections (required when insecure is false)
+  caCert: |-
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+
+# -- Whitelist of LDAP group DNs to sync. Each group must exist in your LDAP server. Use multi-line format with one group DN per line
+whitelist: |
+  cn=lab-admins,ou=groups,dc=example,dc=com
+  cn=lab-readers,ou=groups,dc=example,dc=com
+
+# RFC2307 LDAP sync schema settings
+syncSettings:
+  # LDAP groups query configuration
+  groupsQuery:
+    # -- LDAP filter for group searches
+    filter: "(objectclass=groupOfNames)"
+    # -- Search scope for group queries (sub, one, or base)
+    scope: "sub"
+    # -- LDAP alias dereferencing behavior for group queries (never, search, base, or always)
+    derefAliases: "never"
+  # LDAP users query configuration
+  usersQuery:
+    # -- LDAP alias dereferencing behavior for user queries (never, search, base, or always)
+    derefAliases: "never"
+  # -- LDAP attribute to use as the group's unique identifier
+  groupUIDAttribute: "dn"
+  # -- LDAP attributes to use for the group name in OpenShift
+  groupNameAttributes: ["cn"]
+  # -- LDAP attributes that define group membership
+  groupMembershipAttributes: ["member"]
+  # -- LDAP attributes to use for the user name in OpenShift
+  userNameAttributes: ["cn"]
+  # -- LDAP attribute to use as the user's unique identifier
+  userUIDAttribute: "dn"
+  # -- Continue sync if a group member is not found in LDAP
+  tolerateMemberNotFound: true
+  # -- Continue sync if a group member is outside the user search scope
+  tolerateMemberOutOfScope: true
+
+# CronJob schedule and configuration
+cronjob:
+  # -- Cron schedule for automatic LDAP group synchronization (in cron format)
+  schedule: "*/30 * * * *"
+  # -- Concurrency policy for the CronJob (Allow, Forbid, or Replace)
+  concurrencyPolicy: Forbid
+  # -- Number of retries before considering a job as failed
+  backoffLimit: 0
+  # -- Maximum duration in seconds for the sync job to run
+  activeDeadlineSeconds: 500
+  # -- Time in seconds to keep finished job pods before cleanup
+  ttlSecondsAfterFinished: 1800
+
+# Additional resources to create, e.g. the LDAP secret
+extraResources:
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: ldap-creds
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        name: vault-backend
+        kind: ClusterSecretStore
+      target:
+        name: ldap-creds
+      data:
+        - secretKey: bindPassword
+          remoteRef:
+            key: secret/ldap
+            property: password

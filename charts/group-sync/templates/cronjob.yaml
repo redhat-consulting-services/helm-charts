@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ldap-group-syncer
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjob.backoffLimit }}
+      template:
+        spec:
+          serviceAccountName: ldap-group-syncer
+          restartPolicy: Never
+          containers:
+          - name: ldap-group-sync
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            command:
+            - /bin/bash
+            - -c
+            - oc adm groups sync --whitelist=/etc/config/whitelist.txt --sync-config=/etc/config/sync.yaml --confirm
+            volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            {{- if .Values.ldap.caCert }}
+            - name: ldap-ca
+              mountPath: /etc/ldap-ca
+            {{- end }}
+            - name: ldap-secret
+              mountPath: /etc/secrets
+          volumes:
+          - name: config-volume
+            configMap:
+              name: ldap-sync-config
+          {{- if .Values.ldap.caCert }}
+          - name: ldap-ca
+            configMap:
+              name: ldap-sync-ca
+          {{- end }}
+          - name: ldap-secret
+            secret:
+              secretName: {{ .Values.ldap.secretName }}
