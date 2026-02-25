@@ -58,7 +58,9 @@ spec:
   {{- with $mergedValue.source }}
   source:
     {{- if or (not $.Values.appSourceBasePath) (.ignoreBasePath | default false) }}
-    path: {{ .path | quote }}
+    {{- if .path }}
+    path: {{ .path | default "null" }}
+    {{- end }}
     {{- else }}
     path: {{ printf "%s/%s" (trimSuffix "/" $.Values.appSourceBasePath) (trimPrefix "/" .path) | quote }}
     {{- end }}
@@ -72,17 +74,25 @@ spec:
   {{- range $source := . }}
     - repoURL: {{ .repoURL | required (printf "No sources.repoURL specified for repoURL") }}
       targetRevision: {{ .targetRevision | required (printf "No sources.targetRevision specified for targetRevision") }}
+      {{- if .chart }}
       chart: {{ .chart | default "null" }}
+      {{- end }}
+      {{- if .ref }}
       ref: {{ .ref | default "null" }}
+      {{- end }}
       {{- with .helm }}
       helm:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{/* check for appSourcebasePath */}}
       {{- if or (not $.Values.appSourceBasePath) ($source.ignoreBasePath | default false) }}
+      {{- if .path }}
       path: {{ $source.path | default "null" }}
+      {{- end }}
       {{- else }}
+      {{- if .path }}
       path: {{ printf "%s/%s" (trimSuffix "/" $.Values.appSourceBasePath) (trimPrefix "/" $source.path) | quote }}
+      {{- end }}
       {{- end }}
   {{- end }} {{/* end for range */}}
   {{- end }} {{/* end for with $val.sources */}}

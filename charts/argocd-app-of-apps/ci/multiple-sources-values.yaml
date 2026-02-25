@@ -1,0 +1,52 @@
+appSuffix: null
+
+appSourceBasePath: overlays/clusters/cluster-config
+
+default:
+  application:
+    enabled: false
+    namespace: "openshift-gitops"
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+    syncPolicy:
+      automated:
+        enabled: true
+        selfHeal: true
+        prune: false
+      retry: {}
+      syncOptions: []
+    project: cluster-config
+    destination:
+      namespace: openshift-gitops
+      server: https://kubernetes.default.svc
+
+projects:
+  cluster-config:
+    enabled: true
+    annotations:
+      argocd.argoproj.io/sync-wave: "-2"
+    namespace: openshift-gitops
+    sourceRepos:
+      - https://example.com/example/repo.git
+    destinations: |
+      - namespace: '*'
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+
+applications:
+  example:
+    enabled: true
+    annotations:
+      argocd.argoproj.io/sync-wave: "1"
+    sources:
+      - repoURL: https://example.com/example/repo.git
+        targetRevision: main
+        ref: values
+      - repoURL: https://example.com/example/helm-charts.git
+        path: chart/
+        targetRevision: main
+        helm:
+          valueFiles:
+            - $values/values.yaml
