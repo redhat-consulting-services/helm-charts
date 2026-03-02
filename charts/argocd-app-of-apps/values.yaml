@@ -26,7 +26,8 @@ default:
     annotations: {}
     finalizers: []
     destination:
-      server: https://kubernetes.default.svc
+      # default.application.destination.server -- server is the URL of the Kubernetes API server to which the application will be deployed. If not specified, it defaults to https://kubernetes.default.svc
+      server: null
       namespace: "openshift-gitops"
     project: "default"
     # applications.example.syncPolicy -- syncPolicy is the sync policy for the application
