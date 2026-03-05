@@ -1,6 +1,6 @@
 # tenant-namespaces
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square)
+![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.0](https://img.shields.io/badge/AppVersion-1.2.0-informational?style=flat-square)
 
 A multi-tenant onboarding chart that automates namespace creation, resource governance, and Argo CD project delegation for development teams
 
@@ -24,6 +24,7 @@ defaults:
       enableNetpolAuditLogging: true
       enableUserMonitoring: true
       enableCertificateConfigMap: true
+      enableServiceCaCertificateConfigMap: true
       enableArgocdRBAC: true
 
   limitRange:
@@ -199,10 +200,11 @@ namespaces:
 | defaults.limitRange.pvc.enabled | bool | `true` | enabled indicates if container limits are enabled. Only used if parent "limitRange" enabled is true. |
 | defaults.limitRange.pvc.values | object | `{"max":{"storage":"10Gi"},"min":{"storage":"1Gi"}}` | values defines the concrete limit values. |
 | defaults.namespace.annotations | object | `{}` | Annotations applied to all Namespaces being provisioned. |
-| defaults.namespace.features | object | `{"enableArgocdRBAC":true,"enableCertificateConfigMap":true,"enableNetpolAuditLogging":true,"enableUserMonitoring":true}` | features contains feature flags applied to all namespaces unless overridden. |
+| defaults.namespace.features | object | `{"enableArgocdRBAC":true,"enableCertificateConfigMap":true,"enableNetpolAuditLogging":true,"enableServiceCaCertificateConfigMap":true,"enableUserMonitoring":true}` | features contains feature flags applied to all namespaces unless overridden. |
 | defaults.namespace.features.enableArgocdRBAC | bool | `true` | enableArgocdRBAC enables ArgoCD RBAC RoleBinding creation for the namespace. When disabled, ArgoCD's application and applicationset controllers will not have access to the namespace, unless manually granted. |
 | defaults.namespace.features.enableCertificateConfigMap | bool | `true` | enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace. |
 | defaults.namespace.features.enableNetpolAuditLogging | bool | `true` | enableNetpolAuditLogging enables OVN ACL logging for allowed and denied traffic. |
+| defaults.namespace.features.enableServiceCaCertificateConfigMap | bool | `true` | enableServiceCaCertificateConfigMap enables automatic injection of the service CA bundle into a ConfigMap with service.beta.openshift.io/inject-cabundle: "true" in the namespace. |
 | defaults.namespace.features.enableUserMonitoring | bool | `true` | enableUserMonitoring enables user-defined Prometheus monitoring for applications. |
 | defaults.namespace.labels | object | `{}` | Labels applied to all Namespaces being provisioned. |
 | defaults.rbac | object | `{"enabled":false,"roleBindings":[]}` | rbac defines default RBAC settings applied when enableRBAC is true. |
