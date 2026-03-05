@@ -20,6 +20,8 @@ defaults:
       enableUserMonitoring: true
       # -- enableCertificateConfigMap enables automatic injection of the cluster CA bundle into a ConfigMap in the namespace.
       enableCertificateConfigMap: true
+      # -- enableServiceCaCertificateConfigMap enables automatic injection of the service CA bundle into a ConfigMap with service.beta.openshift.io/inject-cabundle: "true" in the namespace.
+      enableServiceCaCertificateConfigMap: true
       # -- enableArgocdRBAC enables ArgoCD RBAC RoleBinding creation for the namespace.
       # When disabled, ArgoCD's application and applicationset controllers will not have access to the namespace, unless manually granted.
       enableArgocdRBAC: true

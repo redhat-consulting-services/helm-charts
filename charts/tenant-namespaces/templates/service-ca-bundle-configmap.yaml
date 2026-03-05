@@ -1,0 +1,13 @@
+{{- range $namespace := .Values.namespaces }}
+{{- $nsConfig := mergeOverwrite (deepCopy $.Values.defaults.namespace) ($namespace.namespace | default dict) }}
+{{- if $nsConfig.features.enableServiceCaCertificateConfigMap }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: service-ca-bundle
+    namespace: {{ $namespace.name | quote }}
+    labels:
+      service.beta.openshift.io/inject-cabundle: "true"
+{{- end }}
+{{- end }}
