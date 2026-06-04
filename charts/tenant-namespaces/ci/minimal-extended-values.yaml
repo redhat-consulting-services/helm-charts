@@ -1,3 +1,8 @@
+defaults:
+  namespace:
+    labels:
+      access.networking.openshift.io/default: ""
+
 project:
   name: "example-project"
   enabled: true
@@ -17,8 +22,7 @@ project:
         - p, proj:example-project:example-role, applications, get, example-namespace/*, allow
 
 namespaces:
-  - name: example-namespace
-    extraResources:
+  - extraResources:
       - apiVersion: v1
         kind: Secret
         metadata:
