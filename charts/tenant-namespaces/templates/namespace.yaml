@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ $mergedData.name | quote }}
+  name: {{ $mergedData.name | quote | required "Namespace name is required" }}
   {{- with (include "tenant-namespaces.custom-labels" $mergedData) }}
   labels:
     {{- . | nindent 4 }}

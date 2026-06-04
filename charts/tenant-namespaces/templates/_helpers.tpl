@@ -47,8 +47,8 @@ Custom labels for OpenShift monitoring
 {{- if .features.enableUserMonitoring }}
 openshift.io/user-monitoring: "true"
 {{- end }}
-{{- range $k, $v := .labels }}
-{{ $k }}: {{ $v }}
+{{- with .labels }}
+{{- . | toYaml | nindent 0 }}
 {{- end }}
 {{- end }}
 
