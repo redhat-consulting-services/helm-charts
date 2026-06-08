@@ -12,21 +12,21 @@ spec:
     {{- with $limitRange.container }}
     {{- if .enabled | default false }}
     - type: Container
-      {{- . | toYaml | nindent 6 }}
+      {{- .values | toYaml | nindent 6 }}
     {{- end }}
     {{- end }}
 
     {{- with $limitRange.pod }}
     {{- if .enabled | default false }}
     - type: Pod
-      {{- . | toYaml | nindent 6 }}
+      {{- .values | toYaml | nindent 6 }}
     {{- end }}
     {{- end }}
 
     {{- with $limitRange.pvc }}
     {{- if .enabled | default false }}
     - type: PersistentVolumeClaim
-      {{- . | toYaml | nindent 6 }}
+      {{- .values | toYaml | nindent 6 }}
     {{- end }}
     {{- end }}
 {{- end }}
