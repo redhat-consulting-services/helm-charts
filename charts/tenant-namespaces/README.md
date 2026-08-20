@@ -231,7 +231,7 @@ namespaces:
 | project.enabled | bool | `false` | enable of disable the project resource creation |
 | project.name | string | `""` | name is the name of the Argo CD AppProject to create. |
 | project.namespace | string | `""` | argocdNamespace is the namespace where the Developer Argo CD instance resides (used for AppProject and delegation). |
-| project.annotations | list | `[]` | annotations is a list of annotations for this project. |
+| project.annotations | object | `{notifications.argoproj.io/subscribe.on-sync-succeeded.slack: "deployments}` | Annotations to add to the Argo CD AppProject. |
 | project.roles | list | `[]` | roles is a list of roles and their policies for this project. |
 | project.sourceRepos | list | `[]` | sourceRepos is a list of allowed source repositories for applications in this project. |
 
