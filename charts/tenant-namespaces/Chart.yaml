@@ -4,6 +4,6 @@ description: A multi-tenant onboarding chart that automates namespace creation, 
 
 type: application
 
-version: 1.2.2
+version: 1.2.3
 
-appVersion: "1.2.2"
+appVersion: "1.2.3"
