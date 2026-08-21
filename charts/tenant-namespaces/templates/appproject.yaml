@@ -6,6 +6,10 @@ kind: AppProject
 metadata:
   name: {{ .name | quote }}
   namespace: {{ .namespace | default $.Values.argoCD.namespace | quote }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- with .description }}
   description: {{ . | quote }}
