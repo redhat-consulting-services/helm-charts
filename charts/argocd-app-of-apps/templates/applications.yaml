@@ -66,6 +66,10 @@ spec:
     {{- end }}
     repoURL: {{ .repoURL | required (printf "No source.repoURL specified for %s" $key ) }}
     targetRevision: {{ .targetRevision | default $.Values.default.application.source.targetRevision | required (printf "No source.targetRevision specified for %s" $key ) }}
+    {{- with .pluginName }}
+    plugin:
+      name: {{ . | quote }}
+    {{- end }}
   {{- end }}
   {{- end }}
 
@@ -93,6 +97,10 @@ spec:
       {{- if .path }}
       path: {{ printf "%s/%s" (trimSuffix "/" $.Values.appSourceBasePath) (trimPrefix "/" $source.path) | quote }}
       {{- end }}
+      {{- end }}
+      {{- with .pluginName }}
+      plugin:
+        name: {{ . | quote }}
       {{- end }}
   {{- end }} {{/* end for range */}}
   {{- end }} {{/* end for with $val.sources */}}
