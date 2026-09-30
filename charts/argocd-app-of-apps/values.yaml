@@ -42,27 +42,29 @@ default:
       retry: {}
       # applications.example.syncPolicy.syncOptions -- syncOptions is a list of sync options
       syncOptions: []
-    # applications.example.source -- source is the source of the application
-    # only one of application.example.source or application.example.sources can be set
+    # default.applications.source -- source is the source of the application
+    # only one of default.applications.source or default.applications.sources can be set
     source:
-      # applications.example.source.repoURL -- repoURL is the URL to the application source repository
+      # default.applications.source.repoURL -- repoURL is the URL to the application source repository
       repoURL: https://github.com/my-org/my-repo  # path is missing so no manifests are generated
-      # applications.example.source.targetRevision -- targetRevision is the revision of the application source repository
+      # default.applications.source.targetRevision -- targetRevision is the revision of the application source repository
       targetRevision: master
-      # applications.example.source.ignoreBasePath -- ignoreBasePath is a flag to ignore the base path set in appSourceBasePath
+      # default.applications.source.ignoreBasePath -- ignoreBasePath is a flag to ignore the base path set in appSourceBasePath
       ignoreBasePath: false
-      # applications.example.source.path -- path is the path to the application source
+      # default.applications.source.path -- path is the path to the application source
       path: ""
-      # applications.example.source.helm -- helm is the Helm specific configuration
+      # default.applications.source.helm -- helm is the Helm specific configuration
       # For more information about the Helm configuration, see https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm
       helm: {}
-      #   # applications.example.source.helm.releaseName -- releaseName is the name of the Helm release
-      #   releaseName: ""
-      #   # applications.example.source.helm.ignoreMissingValueFiles -- ignoreMissingValueFiles is a flag to ignore missing value files
-      #   ignoreMissingValueFiles: false
-      #   # applications.example.source.helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
-      #   valueFiles:
-      #     - $myRepo/values.yaml
+        # # default.applications.source.helm.releaseName -- releaseName is the name of the Helm release
+        # releaseName: ""
+        # # default.applications.source.helm.ignoreMissingValueFiles -- ignoreMissingValueFiles is a flag to ignore missing value files
+        # ignoreMissingValueFiles: false
+        # # default.applications.source.helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
+        # valueFiles:
+        #   - $myRepo/values.yaml
+      # default.applications.source.pluginName -- pluginName is the name of the CMP (Config Management Plugin) plugin to use for the application source
+      pluginName: ""
 
   # default.project -- Define default configurations for all projects
   project:
@@ -223,6 +225,8 @@ applications: {}
   #       # applications.example.source.helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
   #       valueFiles:
   #         - $myRepo/values.yaml
+  #     # applications.example.source.pluginName -- pluginName is the name of the CMP (Config Management Plugin) plugin to use for the application source
+  #     pluginName: ""
   #   # applications.example.sources -- sources is a list of sources for the application
   #   # only one of application.example.source or application.example.sources can be set
   #   sources:
@@ -241,6 +245,8 @@ applications: {}
   #         # applications.example.sources[0].helm.valueFiles -- valueFiles is a list of Helm value files to be used (`$ref` can be used to reference a different source)
   #         valueFiles:
   #           - $myRepo/values.yaml
+  #       # applications.example.sources[0].pluginName -- pluginName is the name of the CMP (Config Management Plugin) plugin to use for the application source
+  #       pluginName: ""
   #     -
   #       # applications.example.sources[1].repoURL -- repoURL is the URL to the application source repository
   #       repoURL: https://github.com/redhat-consulting-services/helm-charts
@@ -252,5 +258,7 @@ applications: {}
   #       path: "app-of-apps"
   #       # applications.example.sources[1].ref -- ref is the reference name to be used in the application (only used when Helm is used with different repositories for chart and values)
   #       ref: myRepo
+  #       # applications.example.sources[1].pluginName -- pluginName is the name of the CMP (Config Management Plugin) plugin to use for the application source
+  #       pluginName: ""
   #   # applications.example.extraFields -- extraFields allows for adding additional fields to the application, that are not mapped
   #   extraFields: {}
